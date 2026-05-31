@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery | Asu Photo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="common.js"></script>
+  <script>applyFonts();</script>
+</head>
+<body>
+
+<div id="hd"></div>
+
+<main>
+  <div class="gallery-header">
+    <div class="section-title">
+      <span class="en-title">Gallery</span>
+      <span class="ja-sub">ギャラリー</span>
+    </div>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid"></div>
+
+  <div style="text-align:center; padding: 48px 24px;">
+    <a href="index.html" class="btn-outline">← トップへ戻る</a>
+  </div>
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="拡大表示">
+  <button class="lb-close" id="lbClose" aria-label="閉じる">✕</button>
+  <button class="lb-arrow lb-prev" id="lbPrev" aria-label="前の写真">‹</button>
+  <div class="lightbox-img-wrap">
+    <img id="lbImg" src="" alt="拡大写真">
+  </div>
+  <button class="lb-arrow lb-next" id="lbNext" aria-label="次の写真">›</button>
+</div>
+
+<div id="ft"></div>
+<div id="fc"></div>
+
+<script>
+document.getElementById('hd').innerHTML = renderHeader();
+document.getElementById('ft').innerHTML = renderFooter();
+document.getElementById('fc').innerHTML = renderFixedCta();
+initNav();
+
+/* default 12 placeholder images */
+const defaults = [
+  'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1537365587684-f490dff69498?w=400&h=400&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?w=400&h=400&fit=crop&q=75',
+];
+
+const d = getData();
+const savedGallery = d.images && Array.isArray(d.images.gallery) && d.images.gallery.length
+  ? d.images.gallery
+  : defaults;
+
+const grid = document.getElementById('galleryGrid');
+savedGallery.forEach((src, i) => {
+  const item = document.createElement('div');
+  item.className = 'gallery-grid-item';
+  item.innerHTML = `<img src="${src}" alt="ギャラリー写真${i+1}" loading="lazy">`;
+  item.addEventListener('click', () => openLightbox(i));
+  grid.appendChild(item);
+});
+
+/* Lightbox */
+let currentIdx = 0;
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+
+function openLightbox(i) {
+  currentIdx = i;
+  lbImg.src = savedGallery[i];
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function showPrev() {
+  currentIdx = (currentIdx - 1 + savedGallery.length) % savedGallery.length;
+  lbImg.src = savedGallery[currentIdx];
+}
+function showNext() {
+  currentIdx = (currentIdx + 1) % savedGallery.length;
+  lbImg.src = savedGallery[currentIdx];
+}
+
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbPrev').addEventListener('click', showPrev);
+document.getElementById('lbNext').addEventListener('click', showNext);
+
+lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape')     closeLightbox();
+  if (e.key === 'ArrowLeft')  showPrev();
+  if (e.key === 'ArrowRight') showNext();
+});
+</script>
+</body>
+</html>

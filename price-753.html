@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shichigosan Plan | Asu Photo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="common.js"></script>
+  <script>applyFonts();</script>
+</head>
+<body>
+
+<div id="hd"></div>
+
+<main>
+  <section class="price-top">
+    <div class="price-section">
+      <div class="section-title">
+        <span class="en-title">Shichigosan</span>
+        <span class="ja-sub">七五三</span>
+      </div>
+
+      <img id="planImg" class="price-hero-img"
+           src="https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&h=533&fit=crop&q=80"
+           alt="七五三">
+
+      <p class="price-intro" id="planIntro">
+        晴れ着姿のお子さまの輝く一日を、丁寧に記録します。<br>
+        神社でのご参拝シーンから、自然な笑顔のカットまでお任せください。
+      </p>
+
+      <div class="price-plans" id="pricePlans"></div>
+
+      <div style="text-align:center; margin-top: 16px;">
+        <a href="index.html#plan" class="back-link">← Planに戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="price-cta">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(26px,5vw,38px);font-weight:400;margin-bottom:12px;letter-spacing:2px;">ご予約はLINEから</h2>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:28px;line-height:1.9;">日程・場所・ご要望などお気軽にご相談ください</p>
+    <a href="#" class="btn-line" id="lineBtn" target="_blank" rel="noopener">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINEで予約する
+    </a>
+    <br>
+    <a href="index.html#plan" class="back-link">← Planに戻る</a>
+  </section>
+</main>
+
+<div id="ft"></div>
+<div id="fc"></div>
+
+<script>
+document.getElementById('hd').innerHTML = renderHeader();
+document.getElementById('ft').innerHTML = renderFooter();
+document.getElementById('fc').innerHTML = renderFixedCta();
+initNav();
+
+const d = getData();
+document.getElementById('lineBtn').href = d.lineUrl || LINE_URL_DEFAULT;
+document.getElementById('planImg').src = getImage('plan_753',
+  'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&h=533&fit=crop&q=80');
+
+const defaultPlans = [
+  {
+    en: 'Standard Plan',
+    ja: 'スタンダードプラン',
+    price: '¥35,000',
+    note: '出張費込み・税込',
+    includes: ['撮影時間 約60分', 'データ納品 50枚以上', 'オンラインデータ納品', '神社・公園などへのご出張', '簡易レタッチ込み'],
+  },
+  {
+    en: 'Premium Plan',
+    ja: 'プレミアムプラン',
+    price: '¥50,000',
+    note: '出張費込み・税込',
+    includes: ['撮影時間 約90分', 'データ納品 100枚以上', 'オンラインデータ納品', '神社・公園などへのご出張', '丁寧なレタッチ込み', 'お着替え1回対応', 'きょうだい・家族カットも対応'],
+  },
+];
+
+const plans = (d.plans && d.plans['753'] && d.plans['753'].length) ? d.plans['753'] : defaultPlans;
+const container = document.getElementById('pricePlans');
+
+plans.forEach(p => {
+  const includes = Array.isArray(p.includes)
+    ? p.includes.map(i => `<li>${i}</li>`).join('')
+    : `<li>${p.includes}</li>`;
+  container.insertAdjacentHTML('beforeend', `
+    <div class="price-plan-card">
+      <h3>${p.en}</h3>
+      <p class="price-plan-name-ja">${p.ja}</p>
+      <p class="price-amount">${p.price}</p>
+      <p class="price-amount-note">${p.note || ''}</p>
+      <ul class="price-includes">${includes}</ul>
+    </div>`);
+});
+</script>
+</body>
+</html>

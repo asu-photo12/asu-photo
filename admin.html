@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理画面 | Asu Photo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="common.js"></script>
+  <script>applyFonts();</script>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div class="admin-login-wrap" id="loginWrap">
+  <div class="login-card">
+    <h1>Asu Photo</h1>
+    <p class="login-sub">ADMIN</p>
+    <input type="password" id="pwInput" placeholder="パスワード" autocomplete="current-password">
+    <p class="login-error" id="loginError"></p>
+    <button class="btn-login" id="loginBtn">ログイン</button>
+  </div>
+</div>
+
+<!-- ===== ADMIN HEADER ===== -->
+<div class="admin-header" id="adminHeader" style="display:none">
+  <h1>Asu Photo — 管理画面</h1>
+  <button class="btn-logout" id="logoutBtn">ログアウト</button>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- 0. 書体設定 -->
+  <div class="admin-section-card">
+    <h2>書体設定</h2>
+
+    <div class="form-group">
+      <label class="form-label">本文フォント（全体）</label>
+      <select class="form-input" id="fontBody"></select>
+      <p class="font-preview" id="prevBody" style="margin-top:8px;font-size:15px;color:var(--text-light);">あのイーハトーヴォのすきとおった風 家族の笑顔を残す出張カメラマン</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">セクションタイトルフォント（英字）</label>
+      <select class="form-input" id="fontDisplay"></select>
+      <p class="font-preview" id="prevDisplay" style="margin-top:8px;font-size:22px;font-style:italic;color:var(--text-light);">Plan / Gallery / Profile</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">キャッチコピーフォント</label>
+      <select class="form-input" id="fontCatch"></select>
+      <p class="font-preview" id="prevCatch" style="margin-top:8px;font-size:17px;letter-spacing:2px;color:var(--text-light);">特別な日だけじゃない いつもの幸せを</p>
+    </div>
+  </div>
+
+  <!-- 1. テキスト -->
+  <div class="admin-section-card">
+    <h2>キャッチコピー・説明文</h2>
+    <div class="form-group">
+      <label class="form-label">キャッチコピー</label>
+      <input class="form-input" id="catchcopy" type="text" placeholder="特別な日だけじゃない いつもの幸せを">
+    </div>
+    <div class="form-group">
+      <label class="form-label">サブコピー</label>
+      <input class="form-input" id="subcopy" type="text" placeholder="笑顔も、泣き顔も未来で愛おしくなる瞬間を写します">
+    </div>
+  </div>
+
+  <!-- 2. ヒーロー写真 -->
+  <div class="admin-section-card">
+    <h2>ヒーロー写真（4枚・縦長 3:4）</h2>
+    <div id="heroImgGroup"></div>
+  </div>
+
+  <!-- 3. プランカード写真 -->
+  <div class="admin-section-card">
+    <h2>プランカード写真（縦長 3:4）</h2>
+    <div id="planImgGroup"></div>
+  </div>
+
+  <!-- 4. ギャラリーセクション（トップ用 2枚） -->
+  <div class="admin-section-card">
+    <h2>ギャラリープレビュー写真（トップページ用・縦長 2:3）</h2>
+    <div id="galleryIdxGroup"></div>
+  </div>
+
+  <!-- 5. ギャラリーページ写真（複数） -->
+  <div class="admin-section-card">
+    <h2>ギャラリーページ写真（正方形グリッド）</h2>
+    <div class="gallery-upload-grid" id="galleryGrid"></div>
+    <input type="file" id="galleryFileInput" accept="image/jpeg,image/png,image/webp" multiple>
+    <div style="margin-top:10px">
+      <label class="btn-upload-label" for="galleryFileInput">＋ 写真を追加</label>
+      <span style="font-size:11px;color:var(--text-light);margin-left:10px">JPG・PNG・WebP対応</span>
+    </div>
+  </div>
+
+  <!-- 6. プロフィール -->
+  <div class="admin-section-card">
+    <h2>プロフィール</h2>
+    <div class="img-upload-row">
+      <div class="img-preview-wrap">
+        <img class="img-preview" id="profileImgPrev"
+          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=267&fit=crop&q=75"
+          alt="プロフィール写真">
+      </div>
+      <div class="img-upload-side">
+        <span class="img-upload-name">プロフィール写真</span>
+        <label class="btn-upload-label" for="profileFile">ファイルを選択</label>
+        <input type="file" id="profileFile" accept="image/jpeg,image/png,image/webp">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">プロフィール文</label>
+      <textarea class="form-textarea" id="profileText" rows="5"
+        placeholder="自己紹介文を入力してください"></textarea>
+    </div>
+  </div>
+
+  <!-- 7. 撮影プランと料金 -->
+  <div class="admin-section-card">
+    <h2>撮影プランと料金</h2>
+
+    <!-- 家族写真 -->
+    <div class="plan-sub-section">
+      <h4>家族写真プラン</h4>
+      <div id="planFamilyList"></div>
+      <button class="btn-add-item" onclick="addPlanItem('family')">＋ プランを追加</button>
+    </div>
+
+    <!-- 七五三 -->
+    <div class="plan-sub-section">
+      <h4>七五三プラン</h4>
+      <div id="plan753List"></div>
+      <button class="btn-add-item" onclick="addPlanItem('753')">＋ プランを追加</button>
+    </div>
+
+    <!-- お宮参り -->
+    <div class="plan-sub-section">
+      <h4>お宮参りプラン</h4>
+      <div id="planOmiyaList"></div>
+      <button class="btn-add-item" onclick="addPlanItem('omiya')">＋ プランを追加</button>
+    </div>
+  </div>
+
+  <!-- 8. お客様の声 -->
+  <div class="admin-section-card">
+    <h2>お客様の声</h2>
+    <div id="reviewList"></div>
+    <button class="btn-add-item" onclick="addReview()">＋ 追加</button>
+  </div>
+
+  <!-- 9. FAQ -->
+  <div class="admin-section-card">
+    <h2>よくある質問（FAQ）</h2>
+    <div id="faqList"></div>
+    <button class="btn-add-item" onclick="addFaq()">＋ 追加</button>
+  </div>
+
+  <!-- 10. LINE URL -->
+  <div class="admin-section-card">
+    <h2>LINE公式アカウントURL</h2>
+    <div class="form-group">
+      <label class="form-label">LINE URL</label>
+      <input class="form-input" id="lineUrl" type="text" placeholder="https://line.me/ここを差し替え">
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <button class="btn-save-main" id="saveBtn">保存する</button>
+  </div>
+
+</div><!-- /admin-wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PASS = 'asuphoto2025';
+
+/* ── Auth ── */
+function checkLogin() {
+  return sessionStorage.getItem('ap_auth') === '1';
+}
+function showAdmin() {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('adminHeader').style.display = 'flex';
+  document.getElementById('adminWrap').classList.add('active');
+  loadAll();
+}
+
+if (checkLogin()) showAdmin();
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogin() {
+  const val = document.getElementById('pwInput').value;
+  if (val === PASS) {
+    sessionStorage.setItem('ap_auth', '1');
+    showAdmin();
+  } else {
+    document.getElementById('loginError').textContent = 'パスワードが正しくありません';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('ap_auth');
+  location.reload();
+});
+
+/* ── Image upload helper ── */
+function bindImgUpload(inputId, previewId, storageKey, aspectClass) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    resizeAndEncode(file, b64 => {
+      document.getElementById(previewId).src = b64;
+      const d = getData();
+      if (!d.images) d.images = {};
+      d.images[storageKey] = b64;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+      showToast('画像を保存しました');
+    });
+  });
+}
+
+/* ── Build hero image uploads ── */
+function buildHeroImgGroup() {
+  const wrap = document.getElementById('heroImgGroup');
+  const phs = [
+    'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=200&h=267&fit=crop&q=70',
+    'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=200&h=267&fit=crop&q=70',
+    'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=200&h=267&fit=crop&q=70',
+    'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=200&h=267&fit=crop&q=70',
+  ];
+  [1,2,3,4].forEach((n, i) => {
+    const key = `hero${n}`;
+    const inputId = `heroFile${n}`;
+    const prevId = `heroPrev${n}`;
+    const src = getImage(key, phs[i]);
+    wrap.insertAdjacentHTML('beforeend', `
+      <div class="img-upload-row">
+        <div class="img-preview-wrap">
+          <img class="img-preview" id="${prevId}" src="${src}" alt="ヒーロー${n}">
+        </div>
+        <div class="img-upload-side">
+          <span class="img-upload-name">写真 ${n}</span>
+          <label class="btn-upload-label" for="${inputId}">ファイルを選択</label>
+          <input type="file" id="${inputId}" accept="image/jpeg,image/png,image/webp">
+        </div>
+      </div>`);
+    bindImgUpload(inputId, prevId, key);
+  });
+}
+
+/* ── Build plan card image uploads ── */
+function buildPlanImgGroup() {
+  const wrap = document.getElementById('planImgGroup');
+  const defs = [
+    { key: 'plan_family', label: '家族写真', ph: 'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=200&h=267&fit=crop&q=70' },
+    { key: 'plan_753',    label: '七五三',   ph: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=200&h=267&fit=crop&q=70' },
+    { key: 'plan_omiya',  label: 'お宮参り', ph: 'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=200&h=267&fit=crop&q=70' },
+  ];
+  defs.forEach((p, i) => {
+    const inputId = `planFile_${i}`;
+    const prevId = `planPrev_${i}`;
+    const src = getImage(p.key, p.ph);
+    wrap.insertAdjacentHTML('beforeend', `
+      <div class="img-upload-row">
+        <div class="img-preview-wrap">
+          <img class="img-preview" id="${prevId}" src="${src}" alt="${p.label}">
+        </div>
+        <div class="img-upload-side">
+          <span class="img-upload-name">${p.label}</span>
+          <label class="btn-upload-label" for="${inputId}">ファイルを選択</label>
+          <input type="file" id="${inputId}" accept="image/jpeg,image/png,image/webp">
+        </div>
+      </div>`);
+    bindImgUpload(inputId, prevId, p.key);
+  });
+}
+
+/* ── Build gallery index image uploads ── */
+function buildGalleryIdxGroup() {
+  const wrap = document.getElementById('galleryIdxGroup');
+  const defs = [
+    { key: 'gallery_idx_1', label: 'プレビュー写真 1', ph: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=300&fit=crop&q=70' },
+    { key: 'gallery_idx_2', label: 'プレビュー写真 2', ph: 'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=200&h=300&fit=crop&q=70' },
+  ];
+  defs.forEach((g, i) => {
+    const inputId = `galleryIdxFile_${i}`;
+    const prevId = `galleryIdxPrev_${i}`;
+    const src = getImage(g.key, g.ph);
+    wrap.insertAdjacentHTML('beforeend', `
+      <div class="img-upload-row">
+        <div class="img-preview-wrap">
+          <img class="img-preview" id="${prevId}" src="${src}" alt="${g.label}">
+        </div>
+        <div class="img-upload-side">
+          <span class="img-upload-name">${g.label}</span>
+          <label class="btn-upload-label" for="${inputId}">ファイルを選択</label>
+          <input type="file" id="${inputId}" accept="image/jpeg,image/png,image/webp">
+        </div>
+      </div>`);
+    bindImgUpload(inputId, prevId, g.key);
+  });
+}
+
+/* ── Gallery multi-upload ── */
+function buildGalleryGrid() {
+  const d = getData();
+  const imgs = (d.images && Array.isArray(d.images.gallery)) ? d.images.gallery : [];
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  imgs.forEach((src, i) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-upload-item';
+    item.innerHTML = `<img src="${src}" alt="ギャラリー${i+1}">
+      <button class="btn-rm-img" data-idx="${i}" title="削除">×</button>`;
+    item.querySelector('.btn-rm-img').addEventListener('click', () => removeGalleryImg(i));
+    grid.appendChild(item);
+  });
+}
+
+document.getElementById('galleryFileInput').addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  let processed = 0;
+  const d = getData();
+  if (!d.images) d.images = {};
+  if (!Array.isArray(d.images.gallery)) d.images.gallery = [];
+
+  files.forEach(file => {
+    resizeAndEncode(file, b64 => {
+      d.images.gallery.push(b64);
+      processed++;
+      if (processed === files.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        buildGalleryGrid();
+        showToast(`${files.length}枚の写真を追加しました`);
+      }
+    });
+  });
+  e.target.value = '';
+});
+
+function removeGalleryImg(idx) {
+  const d = getData();
+  if (d.images && Array.isArray(d.images.gallery)) {
+    d.images.gallery.splice(idx, 1);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    buildGalleryGrid();
+  }
+}
+
+/* ── Profile image ── */
+document.getElementById('profileFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  resizeAndEncode(file, b64 => {
+    document.getElementById('profileImgPrev').src = b64;
+    const d = getData();
+    if (!d.images) d.images = {};
+    d.images.profile = b64;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    showToast('プロフィール写真を保存しました');
+  });
+});
+
+/* ── Plan items ── */
+function planItemHtml(type, i, item) {
+  const incl = Array.isArray(item.includes) ? item.includes.join('\n') : (item.includes || '');
+  return `
+    <div class="repeater-item" data-type="${type}" data-i="${i}">
+      <button class="btn-rm-item" onclick="removePlanItem('${type}',${i})" title="削除">×</button>
+      <div class="form-group">
+        <label class="form-label">プラン名（英語）</label>
+        <input class="form-input plan-en" type="text" value="${item.en || ''}" placeholder="Standard Plan">
+      </div>
+      <div class="form-group">
+        <label class="form-label">プラン名（日本語）</label>
+        <input class="form-input plan-ja" type="text" value="${item.ja || ''}" placeholder="スタンダードプラン">
+      </div>
+      <div class="form-group">
+        <label class="form-label">料金</label>
+        <input class="form-input plan-price" type="text" value="${item.price || ''}" placeholder="¥30,000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">注記（税込など）</label>
+        <input class="form-input plan-note" type="text" value="${item.note || ''}" placeholder="出張費込み・税込">
+      </div>
+      <div class="form-group">
+        <label class="form-label">含まれるもの（1行1項目）</label>
+        <textarea class="form-textarea plan-includes" rows="4" placeholder="撮影時間 約60分&#10;データ納品 50枚以上">${incl}</textarea>
+      </div>
+    </div>`;
+}
+
+const planDefaults = {
+  family: [
+    { en:'Standard Plan', ja:'スタンダードプラン', price:'¥30,000', note:'出張費込み・税込', includes:['撮影時間 約60分','データ納品 50枚以上','オンラインデータ納品','撮影場所へのご出張','簡易レタッチ込み'] },
+    { en:'Premium Plan',  ja:'プレミアムプラン',  price:'¥45,000', note:'出張費込み・税込', includes:['撮影時間 約90分','データ納品 100枚以上','オンラインデータ納品','撮影場所へのご出張','丁寧なレタッチ込み','お着替え1回対応'] },
+  ],
+  '753': [
+    { en:'Standard Plan', ja:'スタンダードプラン', price:'¥35,000', note:'出張費込み・税込', includes:['撮影時間 約60分','データ納品 50枚以上','オンラインデータ納品','神社・公園などへのご出張','簡易レタッチ込み'] },
+    { en:'Premium Plan',  ja:'プレミアムプラン',  price:'¥50,000', note:'出張費込み・税込', includes:['撮影時間 約90分','データ納品 100枚以上','オンラインデータ納品','神社・公園などへのご出張','丁寧なレタッチ込み','お着替え1回対応','きょうだい・家族カットも対応'] },
+  ],
+  omiya: [
+    { en:'Standard Plan', ja:'スタンダードプラン', price:'¥28,000', note:'出張費込み・税込', includes:['撮影時間 約45分','データ納品 40枚以上','オンラインデータ納品','神社・公園などへのご出張','簡易レタッチ込み'] },
+    { en:'Premium Plan',  ja:'プレミアムプラン',  price:'¥42,000', note:'出張費込み・税込', includes:['撮影時間 約75分','データ納品 80枚以上','オンラインデータ納品','神社・公園などへのご出張','丁寧なレタッチ込み','ご家族全員での記念カット対応'] },
+  ],
+};
+
+function renderPlanList(type) {
+  const d = getData();
+  const items = (d.plans && d.plans[type] && d.plans[type].length) ? d.plans[type] : planDefaults[type];
+  const listId = { family:'planFamilyList', '753':'plan753List', omiya:'planOmiyaList' }[type];
+  const el = document.getElementById(listId);
+  el.innerHTML = items.map((item,i) => planItemHtml(type, i, item)).join('');
+}
+
+function addPlanItem(type) {
+  const d = getData();
+  if (!d.plans) d.plans = {};
+  if (!d.plans[type]) d.plans[type] = JSON.parse(JSON.stringify(planDefaults[type]));
+  d.plans[type].push({ en:'', ja:'', price:'', note:'', includes:[] });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  renderPlanList(type);
+}
+
+function removePlanItem(type, idx) {
+  const d = getData();
+  if (!d.plans) d.plans = {};
+  if (!d.plans[type]) d.plans[type] = JSON.parse(JSON.stringify(planDefaults[type]));
+  d.plans[type].splice(idx, 1);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  renderPlanList(type);
+}
+
+/* ── Reviews ── */
+function reviewHtml(i, item) {
+  return `
+    <div class="repeater-item">
+      <button class="btn-rm-item" onclick="removeReview(${i})" title="削除">×</button>
+      <div class="form-group">
+        <label class="form-label">お客様のコメント</label>
+        <textarea class="form-textarea rv-text" rows="3" placeholder="感想を入力">${item.text || ''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">お名前（例：S.M. 様）</label>
+        <input class="form-input rv-name" type="text" value="${item.name || ''}" placeholder="S.M. 様（家族写真）">
+      </div>
+    </div>`;
+}
+
+const defaultReviews = [
+  { text:'子どもたちが自然な表情でいられるよう寄り添ってくださり、一生の宝物になる写真を撮っていただきました。', name:'S.M. 様（家族写真）' },
+  { text:'七五三の撮影をお願いしました。人見知りの子どもも、気づいたら笑顔になっていて驚きました。', name:'K.T. 様（七五三）' },
+  { text:'お宮参りの大切な日を丁寧に記録してくださいました。写真を見るたびにあの日の空気を思い出せます。', name:'Y.N. 様（お宮参り）' },
+];
+
+function renderReviews() {
+  const d = getData();
+  const items = (d.reviews && d.reviews.length) ? d.reviews : defaultReviews;
+  document.getElementById('reviewList').innerHTML = items.map((r,i) => reviewHtml(i,r)).join('');
+}
+
+function addReview() {
+  const d = getData();
+  if (!d.reviews) d.reviews = JSON.parse(JSON.stringify(defaultReviews));
+  d.reviews.push({ text:'', name:'' });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  renderReviews();
+}
+
+function removeReview(idx) {
+  const d = getData();
+  if (!d.reviews) d.reviews = JSON.parse(JSON.stringify(defaultReviews));
+  d.reviews.splice(idx, 1);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  renderReviews();
+}
+
+/* ── FAQ ── */
+function faqHtml(i, item) {
+  return `
+    <div class="repeater-item">
+      <button class="btn-rm-item" onclick="removeFaq(${i})" title="削除">×</button>
+      <div class="form-group">
+        <label class="form-label">質問</label>
+        <input class="form-input faq-q" type="text" value="${item.q || ''}" placeholder="質問を入力">
+      </div>
+      <div class="form-group">
+        <label class="form-label">回答</label>
+        <textarea class="form-textarea faq-a" rows="3" placeholder="回答を入力">${item.a || ''}</textarea>
+      </div>
+    </div>`;
+}
+
+const defaultFaqs = [
+  { q:'撮影エリアはどこですか？', a:'関東全域へ出張いたします。公園・神社・ご自宅・海・山など、ご希望の場所へお伺いします。' },
+  { q:'雨天の場合はどうなりますか？', a:'天候が悪い場合は日程を変更いたします。撮影前日〜当日朝にご相談させてください。' },
+  { q:'納品はいつ頃になりますか？', a:'撮影後おおむね2〜4週間以内にデータをオンラインでお渡しします。' },
+  { q:'衣装はどうすればいいですか？', a:'ご自由にご用意ください。七五三・お宮参りは和装・洋装どちらでも対応しています。' },
+  { q:'兄弟・祖父母も一緒に撮れますか？', a:'もちろん大丈夫です。人数に応じてプランやお時間をご相談させてください。' },
+];
+
+function renderFaqs() {
+  const d = getData();
+  const items = (d.faqs && d.faqs.length) ? d.faqs : defaultFaqs;
+  document.getElementById('faqList').innerHTML = items.map((f,i) => faqHtml(i,f)).join('');
+}
+
+function addFaq() {
+  const d = getData();
+  if (!d.faqs) d.faqs = JSON.parse(JSON.stringify(defaultFaqs));
+  d.faqs.push({ q:'', a:'' });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  renderFaqs();
+}
+
+function removeFaq(idx) {
+  const d = getData();
+  if (!d.faqs) d.faqs = JSON.parse(JSON.stringify(defaultFaqs));
+  d.faqs.splice(idx, 1);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  renderFaqs();
+}
+
+/* ── Font selects ── */
+function buildFontSelects() {
+  const d = getData();
+  const saved = d.fonts || {};
+
+  [
+    { selectId: 'fontBody',    previewId: 'prevBody',    key: 'body',    cssVar: '--font-body',    opts: FONT_OPTIONS.body },
+    { selectId: 'fontDisplay', previewId: 'prevDisplay', key: 'display', cssVar: '--font-display', opts: FONT_OPTIONS.display },
+    { selectId: 'fontCatch',   previewId: 'prevCatch',   key: 'catch',   cssVar: '--font-catch',   opts: FONT_OPTIONS.catch },
+  ].forEach(({ selectId, previewId, key, cssVar, opts }) => {
+    const sel = document.getElementById(selectId);
+    const prev = document.getElementById(previewId);
+    const current = saved[key] || opts[0].value;
+
+    sel.innerHTML = opts.map(o =>
+      `<option value="${o.value}" ${o.value === current ? 'selected' : ''}>${o.label}</option>`
+    ).join('');
+
+    function applyPreview(val) {
+      // load Google Font for preview if needed
+      const opt = opts.find(o => o.value === val);
+      if (opt && opt.google) {
+        const id = 'gf-prev-' + opt.google.replace(/[^a-zA-Z0-9]/g, '_');
+        if (!document.getElementById(id)) {
+          const link = document.createElement('link');
+          link.id = id; link.rel = 'stylesheet';
+          link.href = `https://fonts.googleapis.com/css2?family=${opt.google}&display=swap`;
+          document.head.appendChild(link);
+        }
+      }
+      prev.style.fontFamily = val;
+      document.documentElement.style.setProperty(cssVar, val);
+    }
+
+    applyPreview(current);
+    sel.addEventListener('change', () => applyPreview(sel.value));
+  });
+}
+
+/* ── Load all ── */
+function loadAll() {
+  const d = getData();
+
+  /* text fields */
+  document.getElementById('catchcopy').value = d.catchcopy || '';
+  document.getElementById('subcopy').value   = d.subcopy   || '';
+  document.getElementById('lineUrl').value   = d.lineUrl   || '';
+  document.getElementById('profileText').value = d.profile || '';
+
+  /* profile image */
+  const profImg = getImage('profile', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=267&fit=crop&q=70');
+  document.getElementById('profileImgPrev').src = profImg;
+
+  /* image groups */
+  buildHeroImgGroup();
+  buildPlanImgGroup();
+  buildGalleryIdxGroup();
+  buildGalleryGrid();
+
+  /* font selects */
+  buildFontSelects();
+
+  /* plan lists */
+  renderPlanList('family');
+  renderPlanList('753');
+  renderPlanList('omiya');
+
+  /* reviews / faqs */
+  renderReviews();
+  renderFaqs();
+}
+
+/* ── Save ── */
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const d = getData();
+
+  /* fonts */
+  d.fonts = {
+    body:    document.getElementById('fontBody').value,
+    display: document.getElementById('fontDisplay').value,
+    catch:   document.getElementById('fontCatch').value,
+  };
+  applyFonts();
+
+  /* text */
+  d.catchcopy = document.getElementById('catchcopy').value.trim();
+  d.subcopy   = document.getElementById('subcopy').value.trim();
+  d.lineUrl   = document.getElementById('lineUrl').value.trim();
+  d.profile   = document.getElementById('profileText').value.trim();
+
+  /* plan items */
+  const typeMap = { family: 'planFamilyList', '753': 'plan753List', omiya: 'planOmiyaList' };
+  if (!d.plans) d.plans = {};
+  Object.keys(typeMap).forEach(type => {
+    const items = [];
+    document.querySelectorAll(`#${typeMap[type]} .repeater-item`).forEach(el => {
+      const inclRaw = el.querySelector('.plan-includes').value;
+      items.push({
+        en:      el.querySelector('.plan-en').value.trim(),
+        ja:      el.querySelector('.plan-ja').value.trim(),
+        price:   el.querySelector('.plan-price').value.trim(),
+        note:    el.querySelector('.plan-note').value.trim(),
+        includes: inclRaw.split('\n').map(s => s.trim()).filter(Boolean),
+      });
+    });
+    d.plans[type] = items;
+  });
+
+  /* reviews */
+  const rvs = [];
+  document.querySelectorAll('#reviewList .repeater-item').forEach(el => {
+    rvs.push({
+      text: el.querySelector('.rv-text').value.trim(),
+      name: el.querySelector('.rv-name').value.trim(),
+    });
+  });
+  d.reviews = rvs;
+
+  /* faqs */
+  const fqs = [];
+  document.querySelectorAll('#faqList .repeater-item').forEach(el => {
+    fqs.push({
+      q: el.querySelector('.faq-q').value.trim(),
+      a: el.querySelector('.faq-a').value.trim(),
+    });
+  });
+  d.faqs = fqs;
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    showToast('✓ 保存しました');
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') {
+      showToast('⚠ 容量不足です。不要な画像を削除してください。');
+    } else {
+      showToast('保存に失敗しました');
+    }
+  }
+});
+</script>
+</body>
+</html>
