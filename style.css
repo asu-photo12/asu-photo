@@ -236,12 +236,12 @@ section { padding: 80px 24px; }
   pointer-events: none;
 }
 
-/* テキスト：右上配置（iOS対応） */
+/* テキスト：右上端配置（iOS対応） */
 .hero-text-wrap {
   position: absolute;
   z-index: 10;
-  right: 5%;
-  top: 12%;
+  top: 5%;
+  right: 3%;
   text-align: right;
   display: -webkit-flex;
   display: flex;
@@ -249,7 +249,7 @@ section { padding: 80px 24px; }
   flex-direction: column;
   -webkit-align-items: flex-end;
   align-items: flex-end;
-  max-width: 45%;
+  max-width: 50%;
   pointer-events: none;
 }
 
@@ -1139,9 +1139,9 @@ input[type="file"] { display: none !important; }
   }
 
   .hero-text-wrap {
-    right: 4%;
-    top: 8%;
-    max-width: 75%;
+    top: 4%;
+    right: 3%;
+    max-width: 80%;
     text-align: right;
   }
 
