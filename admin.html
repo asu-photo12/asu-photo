@@ -847,10 +847,12 @@ function buildFontSelects() {
   configs.forEach(({ id, prevId, key, cssVar }) => {
     const sel  = document.getElementById(id);
     const prev = document.getElementById(prevId);
-    if (!sel) return;
-    const val = saved[key] || sel.options[0].value;
-    sel.value = val;
-    onFontChange(id, prevId, cssVar, val);
+    if (!sel || !sel.options.length) return;
+    const saved_val = saved[key] || '';
+    sel.value = saved_val;
+    /* 保存値が選択肢に存在しない場合は先頭に戻す */
+    if (!sel.value) sel.value = sel.options[0].value;
+    onFontChange(id, prevId, cssVar, sel.value);
   });
 }
 
@@ -1004,9 +1006,6 @@ function saveSection(section, btn) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
 
-    /* siteColors / siteFonts / siteContent も同期更新 */
-    syncSubKeys(d);
-
     /* ボタンを一時的に「保存済み」表示 */
     if (btn) {
       const orig = btn.textContent;
@@ -1019,32 +1018,6 @@ function saveSection(section, btn) {
       ? '⚠ 容量不足です。不要な画像を削除してください。'
       : '保存に失敗しました');
   }
-}
-
-/* ── サブキー同期（siteColors / siteFonts / siteContent） ── */
-function syncSubKeys(d) {
-  try {
-    localStorage.setItem('siteColors', JSON.stringify({
-      bgColor:     d.colors?.bg         || '',
-      textColor:   d.colors?.text       || '',
-      accentColor: d.colors?.accent     || '',
-      headerBg:    d.colors?.headerBg   || '',
-      titleColor:  d.colors?.titleColor || '',
-      surface:     d.colors?.surface    || '',
-      textLight:   d.colors?.textLight  || '',
-    }));
-    localStorage.setItem('siteFonts', JSON.stringify({
-      bodyFont:  d.fonts?.body    || '',
-      titleFont: d.fonts?.display || '',
-      catchFont: d.fonts?.catch   || '',
-    }));
-    localStorage.setItem('siteContent', JSON.stringify({
-      catchCopy:   d.catchcopy || '',
-      subCopy:     d.subcopy   || '',
-      profileText: d.profile   || '',
-      lineUrl:     d.lineUrl   || '',
-    }));
-  } catch(e) {}
 }
 
 /* ── 全体保存 ── */
@@ -1113,28 +1086,6 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-
-    /* ── 新キーにも書き出し（各ページの同期スクリプト用） ── */
-    localStorage.setItem('siteColors', JSON.stringify({
-      bgColor:     d.colors?.bg         || '',
-      textColor:   d.colors?.text       || '',
-      accentColor: d.colors?.accent     || '',
-      headerBg:    d.colors?.headerBg   || '',
-      titleColor:  d.colors?.titleColor || '',
-      surface:     d.colors?.surface    || '',
-      textLight:   d.colors?.textLight  || '',
-    }));
-    localStorage.setItem('siteFonts', JSON.stringify({
-      bodyFont:  d.fonts?.body    || '',
-      titleFont: d.fonts?.display || '',
-      catchFont: d.fonts?.catch   || '',
-    }));
-    localStorage.setItem('siteContent', JSON.stringify({
-      catchCopy:   d.catchcopy || '',
-      subCopy:     d.subcopy   || '',
-      profileText: d.profile   || '',
-      lineUrl:     d.lineUrl   || '',
-    }));
 
     showToast('✓ 保存しました！全ページに反映されます');
     /* 保存完了アラートも念のため */
