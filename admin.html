@@ -71,7 +71,13 @@
     <!-- プリセット -->
     <div class="form-group">
       <label class="form-label">プリセットテーマ</label>
-      <div class="theme-presets" id="themePresets"></div>
+      <div class="theme-presets" id="themePresets">
+        <button type="button" class="theme-preset-btn" onclick="applyPresetById('bluegray',this)">🩵 ブルーグレー</button>
+        <button type="button" class="theme-preset-btn" onclick="applyPresetById('beige',this)">🌿 ナチュラルベージュ</button>
+        <button type="button" class="theme-preset-btn" onclick="applyPresetById('white',this)">🤍 ホワイト</button>
+        <button type="button" class="theme-preset-btn" onclick="applyPresetById('dark',this)">🌙 ダークモード</button>
+        <button type="button" class="theme-preset-btn" onclick="applyPresetById('sakura',this)">🌸 さくらピンク</button>
+      </div>
     </div>
 
     <!-- カラーピッカー -->
@@ -696,24 +702,61 @@ const COLOR_FIELDS = [
   { id: 'colorTitle',     hexId: 'colorTitleHex',     key: 'titleColor', cssVar: '--title-color', previewClass: 'cpb-title',   previewProp: 'background' },
 ];
 
+/* ── プリセットをIDで適用（onclick直呼び出し用・外部変数不使用） ── */
+function applyPresetById(id, btn) {
+  /* THEME_PRESETS は common.js で定義済みのグローバル */
+  var preset = null;
+  for (var i = 0; i < THEME_PRESETS.length; i++) {
+    if (THEME_PRESETS[i].id === id) { preset = THEME_PRESETS[i]; break; }
+  }
+  if (!preset) return;
+
+  /* key → {pickerInputId, hexInputId, cssVarName} のマッピング（inline） */
+  var fields = [
+    { key: 'bg',         pid: 'colorBg',        hid: 'colorBgHex',        v: '--bg' },
+    { key: 'surface',    pid: 'colorSurface',   hid: 'colorSurfaceHex',   v: '--surface' },
+    { key: 'text',       pid: 'colorText',      hid: 'colorTextHex',      v: '--text' },
+    { key: 'textLight',  pid: 'colorTextLight', hid: 'colorTextLightHex', v: '--text-light' },
+    { key: 'accent',     pid: 'colorAccent',    hid: 'colorAccentHex',    v: '--accent' },
+    { key: 'headerBg',   pid: 'colorHeaderBg',  hid: 'colorHeaderBgHex',  v: '--header-bg-rgba' },
+    { key: 'titleColor', pid: 'colorTitle',     hid: 'colorTitleHex',     v: '--title-color' },
+  ];
+
+  var root = document.documentElement;
+  for (var j = 0; j < fields.length; j++) {
+    var f   = fields[j];
+    var val = preset[f.key] || '#888888';
+    var sw  = document.getElementById(f.pid);
+    var hx  = document.getElementById(f.hid);
+    if (sw)  sw.value  = val;
+    if (hx)  hx.value  = val.toUpperCase();
+
+    if (f.v === '--header-bg-rgba') {
+      var h = val.replace('#','');
+      root.style.setProperty(f.v,
+        'rgba('+parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16)+',0.92)');
+    } else {
+      root.style.setProperty(f.v, val);
+    }
+  }
+
+  /* プレビューバー更新（定義済みなら） */
+  if (typeof updatePreviewBar === 'function') updatePreviewBar();
+
+  /* アクティブ強調 */
+  var btns = document.querySelectorAll('.theme-preset-btn');
+  for (var k = 0; k < btns.length; k++) btns[k].classList.remove('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* 後方互換 */
+function applyPreset(preset) {
+  if (preset && preset.id) applyPresetById(preset.id);
+}
+
 function buildThemeSection() {
   const d = getData();
   const saved = d.colors || {};
-
-  /* プリセットボタン */
-  const presetsEl = document.getElementById('themePresets');
-  THEME_PRESETS.forEach(preset => {
-    const btn = document.createElement('button');
-    btn.className = 'theme-preset-btn';
-    btn.textContent = preset.emoji + ' ' + preset.name;
-    btn.type = 'button';
-    btn.addEventListener('click', () => {
-      applyPreset(preset);
-      document.querySelectorAll('.theme-preset-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-    presetsEl.appendChild(btn);
-  });
 
   /* カラーピッカー初期化 */
   COLOR_FIELDS.forEach(f => {
