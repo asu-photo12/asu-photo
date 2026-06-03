@@ -6,7 +6,8 @@
   <title>管理画面 | Asu Photo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- 管理画面用：全フォント一括読み込み -->
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Dela+Gothic+One&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Hina+Mincho&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Kaisei+Decol:wght@400;500;700&family=Klee+One:wght@400;600&family=Kosugi+Maru&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=M+PLUS+1p:wght@400;500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Montserrat:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&family=Reggae+One&family=Sawarabi+Gothic&family=Sawarabi+Mincho&family=Shippori+Mincho:wght@400;500;700&family=Yomogi&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="common.js"></script>
   <script>applyFonts(); applyColors();</script>
@@ -111,21 +112,45 @@
     <h2>書体設定</h2>
 
     <div class="form-group">
-      <label class="form-label">本文フォント（全体）</label>
-      <select class="form-input" id="fontBody"></select>
-      <p class="font-preview" id="prevBody" style="margin-top:8px;font-size:15px;color:var(--text-light);">あのイーハトーヴォのすきとおった風 家族の笑顔を残す出張カメラマン</p>
+      <label class="form-label">本文フォント（全体）— 10種類</label>
+      <div class="fsp-wrap" id="fontBodyWrap">
+        <div class="fsp-display" id="fontBodyDisplay">
+          <div class="fsp-display-inner">
+            <span class="fsp-display-name">読み込み中...</span>
+          </div>
+        </div>
+        <div class="fsp-dropdown" id="fontBodyDropdown"></div>
+      </div>
+      <input type="hidden" id="fontBody">
+      <p class="font-preview-text" id="prevBody">あのイーハトーヴォのすきとおった風　家族の笑顔を残す出張カメラマン</p>
     </div>
 
     <div class="form-group">
-      <label class="form-label">セクションタイトルフォント（英字）</label>
-      <select class="form-input" id="fontDisplay"></select>
-      <p class="font-preview" id="prevDisplay" style="margin-top:8px;font-size:22px;font-style:italic;color:var(--text-light);">Plan / Gallery / Profile</p>
+      <label class="form-label">セクションタイトルフォント（英字）— 10種類</label>
+      <div class="fsp-wrap" id="fontDisplayWrap">
+        <div class="fsp-display" id="fontDisplayDisplay">
+          <div class="fsp-display-inner">
+            <span class="fsp-display-name">読み込み中...</span>
+          </div>
+        </div>
+        <div class="fsp-dropdown" id="fontDisplayDropdown"></div>
+      </div>
+      <input type="hidden" id="fontDisplay">
+      <p class="font-preview-text" id="prevDisplay" style="font-size:26px;font-style:italic;letter-spacing:2px;">Plan / Gallery / Profile</p>
     </div>
 
     <div class="form-group">
-      <label class="form-label">キャッチコピーフォント</label>
-      <select class="form-input" id="fontCatch"></select>
-      <p class="font-preview" id="prevCatch" style="margin-top:8px;font-size:17px;letter-spacing:2px;color:var(--text-light);">特別な日だけじゃない いつもの幸せを</p>
+      <label class="form-label">キャッチコピーフォント — 10種類</label>
+      <div class="fsp-wrap" id="fontCatchWrap">
+        <div class="fsp-display" id="fontCatchDisplay">
+          <div class="fsp-display-inner">
+            <span class="fsp-display-name">読み込み中...</span>
+          </div>
+        </div>
+        <div class="fsp-dropdown" id="fontCatchDropdown"></div>
+      </div>
+      <input type="hidden" id="fontCatch">
+      <p class="font-preview-text" id="prevCatch" style="font-size:18px;letter-spacing:3px;">特別な日だけじゃない　いつもの幸せを</p>
     </div>
   </div>
 
@@ -705,42 +730,82 @@ function updatePreviewBar() {
   });
 }
 
-/* ── Font selects ── */
+/* ── Font selects（カスタムドロップダウン） ── */
 function buildFontSelects() {
   const d = getData();
   const saved = d.fonts || {};
 
-  [
-    { selectId: 'fontBody',    previewId: 'prevBody',    key: 'body',    cssVar: '--font-body',    opts: FONT_OPTIONS.body },
-    { selectId: 'fontDisplay', previewId: 'prevDisplay', key: 'display', cssVar: '--font-display', opts: FONT_OPTIONS.display },
-    { selectId: 'fontCatch',   previewId: 'prevCatch',   key: 'catch',   cssVar: '--font-catch',   opts: FONT_OPTIONS.catch },
-  ].forEach(({ selectId, previewId, key, cssVar, opts }) => {
-    const sel = document.getElementById(selectId);
-    const prev = document.getElementById(previewId);
+  const configs = [
+    { wrapId: 'fontBodyWrap',    dispId: 'fontBodyDisplay',    dropId: 'fontBodyDropdown',    hiddenId: 'fontBody',    prevId: 'prevBody',    key: 'body',    cssVar: '--font-body',    opts: FONT_OPTIONS.body },
+    { wrapId: 'fontDisplayWrap', dispId: 'fontDisplayDisplay', dropId: 'fontDisplayDropdown', hiddenId: 'fontDisplay', prevId: 'prevDisplay', key: 'display', cssVar: '--font-display', opts: FONT_OPTIONS.display },
+    { wrapId: 'fontCatchWrap',   dispId: 'fontCatchDisplay',   dropId: 'fontCatchDropdown',   hiddenId: 'fontCatch',   prevId: 'prevCatch',   key: 'catch',   cssVar: '--font-catch',   opts: FONT_OPTIONS.catch },
+  ];
+
+  configs.forEach(({ wrapId, dispId, dropId, hiddenId, prevId, key, cssVar, opts }) => {
+    const disp   = document.getElementById(dispId);
+    const drop   = document.getElementById(dropId);
+    const hidden = document.getElementById(hiddenId);
+    const prev   = document.getElementById(prevId);
+    if (!disp || !drop || !hidden || !prev) return;
+
     const current = saved[key] || opts[0].value;
 
-    sel.innerHTML = opts.map(o =>
-      `<option value="${o.value}" ${o.value === current ? 'selected' : ''}>${o.label}</option>`
-    ).join('');
-
-    function applyPreview(val) {
-      // load Google Font for preview if needed
-      const opt = opts.find(o => o.value === val);
-      if (opt && opt.google) {
-        const id = 'gf-prev-' + opt.google.replace(/[^a-zA-Z0-9]/g, '_');
-        if (!document.getElementById(id)) {
-          const link = document.createElement('link');
-          link.id = id; link.rel = 'stylesheet';
-          link.href = `https://fonts.googleapis.com/css2?family=${opt.google}&display=swap`;
-          document.head.appendChild(link);
-        }
-      }
-      prev.style.fontFamily = val;
-      document.documentElement.style.setProperty(cssVar, val);
+    /* 表示名を更新 */
+    function updateDisplay(val) {
+      const opt = opts.find(o => o.value === val) || opts[0];
+      disp.innerHTML = `<div class="fsp-display-inner">
+        <span class="fsp-display-name" style="font-family:${opt.value}">${opt.label}</span>
+        <span class="fsp-display-sub">${opt.sub}</span>
+      </div>`;
+      prev.style.fontFamily = opt.value;
+      document.documentElement.style.setProperty(cssVar, opt.value);
+      hidden.value = opt.value;
+      /* active 更新 */
+      drop.querySelectorAll('.fsp-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.value === opt.value);
+      });
     }
 
-    applyPreview(current);
-    sel.addEventListener('change', () => applyPreview(sel.value));
+    /* オプションリスト構築 */
+    drop.innerHTML = '';
+    opts.forEach(opt => {
+      const item = document.createElement('div');
+      item.className = 'fsp-option' + (opt.value === current ? ' active' : '');
+      item.dataset.value = opt.value;
+      item.innerHTML = `<span class="fsp-option-name" style="font-family:${opt.value}">${opt.label}</span>
+                        <span class="fsp-option-sub">${opt.sub}</span>`;
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        updateDisplay(opt.value);
+        drop.classList.remove('open');
+        disp.classList.remove('open');
+      });
+      drop.appendChild(item);
+    });
+
+    /* トグル */
+    disp.addEventListener('click', e => {
+      e.stopPropagation();
+      const opening = !drop.classList.contains('open');
+      /* 他を全閉 */
+      document.querySelectorAll('.fsp-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.fsp-display').forEach(d => d.classList.remove('open'));
+      if (opening) {
+        drop.classList.add('open');
+        disp.classList.add('open');
+        /* 選択済み項目にスクロール */
+        const active = drop.querySelector('.fsp-option.active');
+        if (active) active.scrollIntoView({ block: 'nearest' });
+      }
+    });
+
+    updateDisplay(current);
+  });
+
+  /* 外クリックで全閉 */
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.fsp-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.fsp-display').forEach(d => d.classList.remove('open'));
   });
 }
 
