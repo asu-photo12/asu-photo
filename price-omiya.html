@@ -1,6 +1,92 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<script>
+/* ===== 管理画面からの設定をHP全ページに即時反映 ===== */
+(function() {
+  var r = document.documentElement;
+
+  /* 1. カラーテーマ（siteColors キー） */
+  try {
+    var c = JSON.parse(localStorage.getItem('siteColors') || '{}');
+    if (c.bgColor)     r.style.setProperty('--bg',          c.bgColor);
+    if (c.surface)     r.style.setProperty('--surface',     c.surface);
+    if (c.textColor)   r.style.setProperty('--text',        c.textColor);
+    if (c.textLight)   r.style.setProperty('--text-light',  c.textLight);
+    if (c.accentColor) r.style.setProperty('--accent',      c.accentColor);
+    if (c.titleColor)  r.style.setProperty('--title-color', c.titleColor);
+    if (c.headerBg) {
+      var h = c.headerBg.replace('#','');
+      r.style.setProperty('--header-bg-rgba',
+        'rgba('+parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16)+',0.92)');
+    }
+  } catch(e) {}
+
+  /* 2. カラーテーマ（旧キー asuphoto_data も読む） */
+  try {
+    var d = JSON.parse(localStorage.getItem('asuphoto_data') || '{}');
+    var c2 = d.colors || {};
+    if (c2.bg)        r.style.setProperty('--bg',          c2.bg);
+    if (c2.surface)   r.style.setProperty('--surface',     c2.surface);
+    if (c2.text)      r.style.setProperty('--text',        c2.text);
+    if (c2.textLight) r.style.setProperty('--text-light',  c2.textLight);
+    if (c2.accent)    r.style.setProperty('--accent',      c2.accent);
+    if (c2.titleColor)r.style.setProperty('--title-color', c2.titleColor);
+    if (c2.headerBg)  {
+      var h2 = c2.headerBg.replace('#','');
+      r.style.setProperty('--header-bg-rgba',
+        'rgba('+parseInt(h2.slice(0,2),16)+','+parseInt(h2.slice(2,4),16)+','+parseInt(h2.slice(4,6),16)+',0.92)');
+    }
+  } catch(e) {}
+
+  /* 3. フォント（siteFonts キー） */
+  try {
+    var f = JSON.parse(localStorage.getItem('siteFonts') || '{}');
+    if (f.bodyFont)  r.style.setProperty('--font-body',    f.bodyFont);
+    if (f.titleFont) r.style.setProperty('--font-display', f.titleFont);
+    if (f.catchFont) r.style.setProperty('--font-catch',   f.catchFont);
+  } catch(e) {}
+
+  /* 4. フォント（旧キー asuphoto_data も読む） */
+  try {
+    var d2 = JSON.parse(localStorage.getItem('asuphoto_data') || '{}');
+    var fo = d2.fonts || {};
+    if (fo.body)    r.style.setProperty('--font-body',    fo.body);
+    if (fo.display) r.style.setProperty('--font-display', fo.display);
+    if (fo.catch)   r.style.setProperty('--font-catch',   fo.catch);
+  } catch(e) {}
+
+  /* 5. テキスト・コンテンツ（DOMContentLoaded後） */
+  try {
+    var ct  = JSON.parse(localStorage.getItem('siteContent')  || '{}');
+    var d3  = JSON.parse(localStorage.getItem('asuphoto_data') || '{}');
+    document.addEventListener('DOMContentLoaded', function() {
+      var catchCopy   = ct.catchCopy   || d3.catchcopy || '';
+      var subCopy     = ct.subCopy     || d3.subcopy   || '';
+      var profileText = ct.profileText || d3.profile   || '';
+      var lineUrl     = ct.lineUrl     || d3.lineUrl   || '';
+
+      if (catchCopy) {
+        var el = document.getElementById('heroCatch') || document.querySelector('.catch-copy');
+        if (el) el.textContent = catchCopy;
+      }
+      if (subCopy) {
+        var el2 = document.getElementById('heroSub') || document.querySelector('.sub-copy');
+        if (el2) el2.textContent = subCopy;
+      }
+      if (profileText) {
+        var el3 = document.getElementById('profileDesc') || document.querySelector('.profile-text');
+        if (el3) el3.textContent = profileText;
+      }
+      if (lineUrl) {
+        ['#lineBtn', '.line-btn', '.btn-line', '.fixed-cta a'].forEach(function(sel) {
+          document.querySelectorAll(sel).forEach(function(el4) { el4.href = lineUrl; });
+        });
+      }
+    });
+  } catch(e) {}
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Omiyamairi Plan | Asu Photo</title>
@@ -8,8 +94,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
   <script src="common.js"></script>
-  <script>applyFonts();</script>
+  <script>applyFonts(); applyColors();</script>
 </head>
 <body>
 

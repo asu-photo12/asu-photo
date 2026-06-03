@@ -3,34 +3,46 @@
 const STORAGE_KEY = 'asuphoto_data';
 const LINE_URL_DEFAULT = 'https://line.me/ここを差し替え';
 
-/* ── フォント選択肢 ── */
+/* ── フォント選択肢（各ページのapplyFonts/管理画面で共有） ── */
 const FONT_OPTIONS = {
+  /* 本文フォント 10種 */
   body: [
-    { value: "'Noto Sans JP', sans-serif",         label: 'Noto Sans JP（デフォルト）',   google: 'Noto+Sans+JP:wght@400;500;700' },
-    { value: "'Noto Serif JP', serif",             label: 'Noto Serif JP（明朝体）',      google: 'Noto+Serif+JP:wght@400;500;700' },
-    { value: "'M PLUS Rounded 1c', sans-serif",    label: 'M PLUS Rounded 1c（丸ゴシック）', google: 'M+PLUS+Rounded+1c:wght@400;500;700' },
-    { value: "'Zen Maru Gothic', sans-serif",      label: 'Zen Maru Gothic（丸ゴシック）',  google: 'Zen+Maru+Gothic:wght@400;500;700' },
-    { value: "'Shippori Mincho', serif",           label: 'しっぽり明朝',                  google: 'Shippori+Mincho:wght@400;500;700' },
-    { value: "'BIZ UDPGothic', sans-serif",        label: 'BIZ UDPGothic',               google: 'BIZ+UDPGothic:wght@400;700' },
-    { value: "'Zen Kaku Gothic New', sans-serif",  label: 'Zen Kaku Gothic New',         google: 'Zen+Kaku+Gothic+New:wght@400;500;700' },
-    { value: "'Kaisei Decol', serif",              label: 'Kaisei Decol（明朝系デコ）',    google: 'Kaisei+Decol:wght@400;500;700' },
+    { value: "'Noto Sans JP', sans-serif",        label: 'Noto Sans JP',        sub: '読みやすいゴシック',      google: 'Noto+Sans+JP:wght@400;500;700' },
+    { value: "'Noto Serif JP', serif",            label: 'Noto Serif JP',       sub: '上品な明朝体',           google: 'Noto+Serif+JP:wght@400;500;700' },
+    { value: "'M PLUS Rounded 1c', sans-serif",   label: 'M PLUS Rounded 1c',   sub: '丸ゴシック・やわらかい',   google: 'M+PLUS+Rounded+1c:wght@400;500;700' },
+    { value: "'M PLUS 1p', sans-serif",           label: 'M PLUS 1p',           sub: 'スタンダードゴシック',    google: 'M+PLUS+1p:wght@400;500;700' },
+    { value: "'Kosugi Maru', sans-serif",         label: 'Kosugi Maru',         sub: 'ポップな丸ゴシック',      google: 'Kosugi+Maru' },
+    { value: "'Sawarabi Gothic', sans-serif",     label: 'Sawarabi Gothic',     sub: 'さわらびゴシック',        google: 'Sawarabi+Gothic' },
+    { value: "'Sawarabi Mincho', serif",          label: 'Sawarabi Mincho',     sub: 'さわらび明朝',           google: 'Sawarabi+Mincho' },
+    { value: "'Zen Kaku Gothic New', sans-serif", label: 'Zen Kaku Gothic New', sub: '禅角ゴシック',           google: 'Zen+Kaku+Gothic+New:wght@400;500;700' },
+    { value: "'Shippori Mincho', serif",          label: 'Shippori Mincho',     sub: 'しっぽり明朝・和風',      google: 'Shippori+Mincho:wght@400;500;700' },
+    { value: "'BIZ UDPGothic', sans-serif",       label: 'BIZ UDPGothic',       sub: 'ビジネス向けゴシック',    google: 'BIZ+UDPGothic:wght@400;700' },
   ],
+  /* セクションタイトル英字フォント 10種 */
   display: [
-    { value: "'Cormorant Garamond', serif",   label: 'Cormorant Garamond（デフォルト）', google: 'Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600' },
-    { value: "'Playfair Display', serif",     label: 'Playfair Display',               google: 'Playfair+Display:ital,wght@0,400;0,600;1,400;1,600' },
-    { value: "'EB Garamond', serif",          label: 'EB Garamond',                    google: 'EB+Garamond:ital,wght@0,400;0,600;1,400;1,600' },
-    { value: "'Lora', serif",                 label: 'Lora',                           google: 'Lora:ital,wght@0,400;0,600;1,400;1,600' },
-    { value: "'Libre Baskerville', serif",    label: 'Libre Baskerville',              google: 'Libre+Baskerville:ital,wght@0,400;0,700;1,400' },
-    { value: "'DM Serif Display', serif",     label: 'DM Serif Display',               google: 'DM+Serif+Display:ital@0;1' },
+    { value: "'Cormorant Garamond', serif",  label: 'Cormorant Garamond', sub: 'エレガントなセリフ',        google: 'Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600' },
+    { value: "'Playfair Display', serif",    label: 'Playfair Display',   sub: '上品なセリフ',              google: 'Playfair+Display:ital,wght@0,400;0,600;1,400;1,600' },
+    { value: "'Libre Baskerville', serif",   label: 'Libre Baskerville',  sub: 'クラシックなセリフ',         google: 'Libre+Baskerville:ital,wght@0,400;0,700;1,400' },
+    { value: "'Lora', serif",                label: 'Lora',               sub: 'やわらかいセリフ',           google: 'Lora:ital,wght@0,400;0,600;1,400;1,600' },
+    { value: "'Josefin Sans', sans-serif",   label: 'Josefin Sans',       sub: 'スタイリッシュなサンセリフ',  google: 'Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300' },
+    { value: "'Raleway', sans-serif",        label: 'Raleway',            sub: '細くおしゃれなサンセリフ',   google: 'Raleway:ital,wght@0,300;0,400;0,600;1,300' },
+    { value: "'Montserrat', sans-serif",     label: 'Montserrat',         sub: 'モダンなサンセリフ',         google: 'Montserrat:ital,wght@0,300;0,400;0,600;1,300' },
+    { value: "'EB Garamond', serif",         label: 'EB Garamond',        sub: 'クラシックガラモン',         google: 'EB+Garamond:ital,wght@0,400;0,600;1,400;1,600' },
+    { value: "'Cinzel', serif",              label: 'Cinzel',             sub: 'ローマ字風・格調高い',        google: 'Cinzel:wght@400;600;700' },
+    { value: "'Great Vibes', cursive",       label: 'Great Vibes',        sub: 'エレガントな筆記体',         google: 'Great+Vibes' },
   ],
+  /* キャッチコピーフォント 10種 */
   catch: [
-    { value: "'Noto Sans JP', sans-serif",                                                            label: 'Noto Sans JP（デフォルト）',    google: null },
-    { value: "'砧丸丸ゴシック B','砧丸丸ゴシックB','Hiragino Maru Gothic Pro',sans-serif",              label: '砧丸丸ゴシックB（システム）',  google: null },
-    { value: "'M PLUS Rounded 1c', sans-serif",                                                       label: 'M PLUS Rounded 1c（丸ゴシック）', google: 'M+PLUS+Rounded+1c:wght@400;500;700' },
-    { value: "'Zen Maru Gothic', sans-serif",                                                         label: 'Zen Maru Gothic（丸ゴシック）',   google: 'Zen+Maru+Gothic:wght@400;500;700' },
-    { value: "'Noto Serif JP', serif",                                                                label: 'Noto Serif JP（明朝体）',          google: 'Noto+Serif+JP:wght@400;500;700' },
-    { value: "'Shippori Mincho', serif",                                                              label: 'しっぽり明朝',                     google: 'Shippori+Mincho:wght@400;500;700' },
-    { value: "'Kaisei Decol', serif",                                                                 label: 'Kaisei Decol（明朝系デコ）',       google: 'Kaisei+Decol:wght@400;500;700' },
+    { value: "'Noto Serif JP', serif",       label: 'Noto Serif JP',      sub: '上品な明朝体',              google: 'Noto+Serif+JP:wght@400;500;700' },
+    { value: "'Shippori Mincho', serif",     label: 'Shippori Mincho',    sub: 'しっぽり明朝',              google: 'Shippori+Mincho:wght@400;500;700' },
+    { value: "'Zen Old Mincho', serif",      label: 'Zen Old Mincho',     sub: '禅旧明朝',                  google: 'Zen+Old+Mincho:wght@400;500;700' },
+    { value: "'Hina Mincho', serif",         label: 'Hina Mincho',        sub: 'ひな明朝・繊細',            google: 'Hina+Mincho' },
+    { value: "'Kaisei Decol', serif",        label: 'Kaisei Decol',       sub: 'カイセイデコール',           google: 'Kaisei+Decol:wght@400;500;700' },
+    { value: "'Yomogi', cursive",            label: 'Yomogi',             sub: 'よもぎ・手書き風',           google: 'Yomogi' },
+    { value: "'Reggae One', cursive",        label: 'Reggae One',         sub: 'レゲエOne・インパクト',      google: 'Reggae+One' },
+    { value: "'Dela Gothic One', cursive",   label: 'Dela Gothic One',    sub: 'デラゴシック・太い',         google: 'Dela+Gothic+One' },
+    { value: "'Zen Maru Gothic', sans-serif",label: 'Zen Maru Gothic',    sub: '禅丸ゴシック',              google: 'Zen+Maru+Gothic:wght@400;500;700' },
+    { value: "'Klee One', cursive",          label: 'Klee One',           sub: 'クレーOne・手書き風',        google: 'Klee+One:wght@400;600' },
   ],
 };
 
@@ -70,6 +82,74 @@ function applyFonts() {
       document.head.appendChild(link);
     }
   });
+}
+
+/* ── カラーテーマ プリセット ── */
+const THEME_PRESETS = [
+  {
+    id: 'bluegray',
+    name: 'ブルーグレー',
+    emoji: '🩵',
+    bg: '#EEF2F5', surface: '#FFFFFF', text: '#333333',
+    textLight: '#6b7a8d', accent: '#5B7FA6',
+    headerBg: '#FFFFFF', titleColor: '#2C3E50',
+  },
+  {
+    id: 'beige',
+    name: 'ナチュラルベージュ',
+    emoji: '🌿',
+    bg: '#F5F0EA', surface: '#FFFDF8', text: '#4A3728',
+    textLight: '#8a7060', accent: '#8B7355',
+    headerBg: '#FFFFFF', titleColor: '#4A3728',
+  },
+  {
+    id: 'white',
+    name: 'ホワイト',
+    emoji: '🤍',
+    bg: '#FFFFFF', surface: '#FFFFFF', text: '#222222',
+    textLight: '#888888', accent: '#666666',
+    headerBg: '#FFFFFF', titleColor: '#222222',
+  },
+  {
+    id: 'dark',
+    name: 'ダークモード',
+    emoji: '🌙',
+    bg: '#1A1A2E', surface: '#252D3D', text: '#EAEAEA',
+    textLight: '#7a8fa8', accent: '#E94560',
+    headerBg: '#16213E', titleColor: '#FFFFFF',
+  },
+  {
+    id: 'sakura',
+    name: 'さくらピンク',
+    emoji: '🌸',
+    bg: '#FDF0F3', surface: '#FFF8FA', text: '#4A2030',
+    textLight: '#9a6878', accent: '#D4708A',
+    headerBg: '#FFFFFF', titleColor: '#4A2030',
+  },
+];
+
+/* ── hex → rgba 変換ヘルパー ── */
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0,2), 16);
+  const g = parseInt(h.substring(2,4), 16);
+  const b = parseInt(h.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/* ── カラーテーマ適用（全ページで呼び出す） ── */
+function applyColors() {
+  const d = getData();
+  const c = d.colors || {};
+  const root = document.documentElement;
+
+  if (c.bg)         root.style.setProperty('--bg',          c.bg);
+  if (c.surface)    root.style.setProperty('--surface',     c.surface);
+  if (c.text)       root.style.setProperty('--text',        c.text);
+  if (c.textLight)  root.style.setProperty('--text-light',  c.textLight);
+  if (c.accent)     root.style.setProperty('--accent',      c.accent);
+  if (c.titleColor) root.style.setProperty('--title-color', c.titleColor);
+  if (c.headerBg)   root.style.setProperty('--header-bg-rgba', hexToRgba(c.headerBg, 0.92));
 }
 
 /* ── Data helpers ── */
@@ -200,7 +280,7 @@ function showToast(msg) {
 }
 
 /* ── Carousel ── */
-function initCarousel(imageUrls) {
+function initCarousel(imageUrls, opts) {
   const outer = document.querySelector('.carousel-outer');
   const track = document.getElementById('carouselTrack');
   if (!outer || !track) return;
@@ -208,7 +288,8 @@ function initCarousel(imageUrls) {
   const imgs = imageUrls.filter(Boolean);
   if (!imgs.length) return;
 
-  function visCount() { return window.innerWidth >= 768 ? 4 : 2; }
+  const vcDesktop = (opts && opts.visCount) || 4;
+  function visCount() { return window.innerWidth >= 768 ? vcDesktop : Math.min(2, vcDesktop); }
 
   let vc = visCount();
   const cloneN = vc;

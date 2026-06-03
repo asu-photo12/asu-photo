@@ -9,8 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
   <script src="common.js"></script>
-  <script>applyFonts();</script>
+  <script>applyFonts(); applyColors();</script>
 </head>
 <body>
 
@@ -20,12 +21,14 @@
 
   <!-- HERO -->
   <section id="hero">
-    <div class="hero-text">
-      <p class="hero-catch" id="heroCatch">特別な日だけじゃない いつもの幸せを</p>
-      <p class="hero-sub" id="heroSub">笑顔も、泣き顔も未来で愛おしくなる瞬間を写します</p>
-    </div>
-    <div class="carousel-outer">
-      <div class="carousel-track" id="carouselTrack"></div>
+    <div class="hero-fullscreen">
+      <div class="hero-slides" id="heroSlides"></div>
+      <div class="hero-overlay">
+        <div class="hero-text-wrap">
+          <p class="hero-catch catch-copy" id="heroCatch">特別な日だけじゃない<br>いつもの幸せを</p>
+          <p class="hero-sub sub-copy" id="heroSub">笑顔も、泣き顔も<br>未来で愛おしくなる瞬間を写します</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -68,7 +71,7 @@
       <div class="profile-text">
         <h3>Asu Photo</h3>
         <p class="profile-title">PHOTOGRAPHER</p>
-        <p class="profile-desc" id="profileDesc">関東を中心に出張撮影を行っているカメラマンです。家族写真・七五三・お宮参りを専門とし、日常の中にある特別な瞬間を大切に記録します。「写真を見るたびに、あの日に戻れる」そんな一枚をお届けしたいと思っています。初めての方も安心していただけるよう、撮影前のご相談を丁寧に行っています。</p>
+        <p class="profile-desc profile-text" id="profileDesc">関東を中心に出張撮影を行っているカメラマンです。家族写真・七五三・お宮参りを専門とし、日常の中にある特別な瞬間を大切に記録します。「写真を見るたびに、あの日に戻れる」そんな一枚をお届けしたいと思っています。初めての方も安心していただけるよう、撮影前のご相談を丁寧に行っています。</p>
         <p class="profile-area">📍 撮影エリア：関東全域（ご希望の場所へ出張）</p>
       </div>
     </div>
@@ -97,7 +100,7 @@
     <div class="line-cta-inner">
       <h2>ご予約・お問い合わせ</h2>
       <p>ご不明な点やご要望など、お気軽にLINEからご連絡ください。<br>撮影の流れやプランについてもご相談いただけます。</p>
-      <a href="#" class="btn-line" id="lineBtn" target="_blank" rel="noopener">
+      <a href="#" class="btn-line line-btn" id="lineBtn" target="_blank" rel="noopener">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         LINEで予約する
       </a>
@@ -199,13 +202,45 @@ faqs.forEach(f => {
   faqList.appendChild(item);
 });
 
-/* carousel */
-initCarousel([
-  getImage('hero1', PH.hero[0]),
-  getImage('hero2', PH.hero[1]),
-  getImage('hero3', PH.hero[2]),
-  getImage('hero4', PH.hero[3]),
-]);
+/* hero slideshow */
+(function() {
+  var imgs = [
+    getImage('hero1', PH.hero[0]),
+    getImage('hero2', PH.hero[1]),
+    getImage('hero3', PH.hero[2]),
+    getImage('hero4', PH.hero[3]),
+  ].filter(Boolean);
+  var container = document.getElementById('heroSlides');
+  if (!container || !imgs.length) return;
+
+  imgs.forEach(function(src, i) {
+    var slide = document.createElement('div');
+    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    var img = document.createElement('img');
+    img.src = src;
+    img.alt = '撮影写真';
+    img.loading = i === 0 ? 'eager' : 'lazy';
+    slide.appendChild(img);
+    container.appendChild(slide);
+  });
+
+  var slides = container.querySelectorAll('.hero-slide');
+  var current = 0;
+  var timer;
+
+  function next() {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }
+  function start() { timer = setInterval(next, 2800); }
+  function stop()  { clearInterval(timer); }
+
+  start();
+  document.addEventListener('visibilitychange', function() {
+    document.hidden ? stop() : (stop(), start());
+  });
+})();
 </script>
 </body>
 </html>
