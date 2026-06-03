@@ -130,6 +130,7 @@
       <span class="cpb-accent">アクセント</span>
       <span class="cpb-title">タイトル</span>
     </div>
+    <button class="btn-section-save" onclick="saveSection('color', this)">✓ カラーテーマを保存</button>
   </div>
 
   <!-- 書体設定 -->
@@ -186,6 +187,7 @@
       </select>
       <p class="font-preview-text" id="prevCatch" style="font-size:18px;letter-spacing:3px;">特別な日だけじゃない　いつもの幸せを</p>
     </div>
+    <button class="btn-section-save" onclick="saveSection('font', this)">✓ 書体設定を保存</button>
   </div>
 
   <!-- テキスト -->
@@ -199,6 +201,7 @@
       <label class="form-label">サブコピー</label>
       <input class="form-input" id="subcopy" type="text" placeholder="笑顔も、泣き顔も未来で愛おしくなる瞬間を写します">
     </div>
+    <button class="btn-section-save" onclick="saveSection('catch', this)">✓ テキストを保存</button>
   </div>
 
   <!-- ヒーロー写真 -->
@@ -250,6 +253,7 @@
       <textarea class="form-textarea" id="profileText" rows="5"
         placeholder="自己紹介文を入力してください"></textarea>
     </div>
+    <button class="btn-section-save" onclick="saveSection('profile', this)">✓ プロフィールを保存</button>
   </div>
 
   
@@ -276,6 +280,7 @@
       <div id="planOmiyaList"></div>
       <button class="btn-add-item" onclick="addPlanItem('omiya')">＋ プランを追加</button>
     </div>
+    <button class="btn-section-save" onclick="saveSection('plans', this)">✓ 料金プランを保存</button>
   </div>
 
   
@@ -283,6 +288,7 @@
     <h2>お客様の声</h2>
     <div id="reviewList"></div>
     <button class="btn-add-item" onclick="addReview()">＋ 追加</button>
+    <button class="btn-section-save" onclick="saveSection('reviews', this)">✓ お客様の声を保存</button>
   </div>
 
   
@@ -290,6 +296,7 @@
     <h2>よくある質問（FAQ）</h2>
     <div id="faqList"></div>
     <button class="btn-add-item" onclick="addFaq()">＋ 追加</button>
+    <button class="btn-section-save" onclick="saveSection('faq', this)">✓ FAQを保存</button>
   </div>
 
   
@@ -299,10 +306,14 @@
       <label class="form-label">LINE URL</label>
       <input class="form-input" id="lineUrl" type="text" placeholder="https://line.me/ここを差し替え">
     </div>
+    <button class="btn-section-save" onclick="saveSection('line', this)">✓ LINE URLを保存</button>
   </div>
 
   <div class="save-bar">
-    <button class="btn-save-main" id="saveBtn">保存する</button>
+    <button class="btn-save-main" id="saveBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7l-4-4zm-5 16a3 3 0 110-6 3 3 0 010 6zm3-10H5V5h10v4z"/></svg>
+      すべて保存
+    </button>
   </div>
 
 </div><!-- /admin-wrap -->
@@ -879,6 +890,86 @@ function loadAll() {
 }
 
 /* ── Save ── */
+/* ── セクション個別保存 ── */
+function saveSection(section, btn) {
+  const d = getData();
+
+  if (section === 'color') {
+    d.colors = {};
+    COLOR_FIELDS.forEach(f => {
+      const val = document.getElementById(f.id)?.value;
+      if (val) d.colors[f.key] = val;
+    });
+    applyColors();
+  }
+  else if (section === 'font') {
+    d.fonts = {
+      body:    document.getElementById('fontBody')?.value    || '',
+      display: document.getElementById('fontDisplay')?.value || '',
+      catch:   document.getElementById('fontCatch')?.value   || '',
+    };
+    applyFonts();
+  }
+  else if (section === 'catch') {
+    d.catchcopy = document.getElementById('catchcopy').value.trim();
+    d.subcopy   = document.getElementById('subcopy').value.trim();
+  }
+  else if (section === 'profile') {
+    d.profile = document.getElementById('profileText').value.trim();
+  }
+  else if (section === 'plans') {
+    const typeMap = { family: 'planFamilyList', '753': 'plan753List', omiya: 'planOmiyaList' };
+    if (!d.plans) d.plans = {};
+    Object.keys(typeMap).forEach(type => {
+      const items = [];
+      document.querySelectorAll(`#${typeMap[type]} .repeater-item`).forEach(el => {
+        const inclRaw = el.querySelector('.plan-includes').value;
+        items.push({
+          en: el.querySelector('.plan-en').value.trim(),
+          ja: el.querySelector('.plan-ja').value.trim(),
+          price: el.querySelector('.plan-price').value.trim(),
+          note: el.querySelector('.plan-note').value.trim(),
+          includes: inclRaw.split('\n').map(s => s.trim()).filter(Boolean),
+        });
+      });
+      d.plans[type] = items;
+    });
+  }
+  else if (section === 'reviews') {
+    const rvs = [];
+    document.querySelectorAll('#reviewList .repeater-item').forEach(el => {
+      rvs.push({ text: el.querySelector('.rv-text').value.trim(), name: el.querySelector('.rv-name').value.trim() });
+    });
+    d.reviews = rvs;
+  }
+  else if (section === 'faq') {
+    const fqs = [];
+    document.querySelectorAll('#faqList .repeater-item').forEach(el => {
+      fqs.push({ q: el.querySelector('.faq-q').value.trim(), a: el.querySelector('.faq-a').value.trim() });
+    });
+    d.faqs = fqs;
+  }
+  else if (section === 'line') {
+    d.lineUrl = document.getElementById('lineUrl').value.trim();
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    /* ボタンを一時的に「保存済み」表示 */
+    if (btn) {
+      const orig = btn.textContent;
+      btn.classList.add('saved');
+      btn.textContent = '✓ 保存しました！';
+      setTimeout(() => { btn.classList.remove('saved'); btn.textContent = orig; }, 2000);
+    }
+  } catch(e) {
+    showToast(e.name === 'QuotaExceededError'
+      ? '⚠ 容量不足です。不要な画像を削除してください。'
+      : '保存に失敗しました');
+  }
+}
+
+/* ── 全体保存 ── */
 document.getElementById('saveBtn').addEventListener('click', () => {
   const d = getData();
 
