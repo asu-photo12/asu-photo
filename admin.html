@@ -42,7 +42,7 @@
   <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-logo">Asu Photo</div>
     <nav>
-      <a href="./index.html" target="_blank" rel="noopener noreferrer" class="sidebar-nav-item" style="text-decoration:none;cursor:pointer;">🏠 サイトを確認する</a>
+      <button type="button" onclick="window.open('./index.html','_blank')" class="sidebar-nav-item" style="cursor:pointer;">🏠 サイトを確認する</button>
       <div style="height:1px;background:#edf0f3;margin:6px 0;"></div>
       <button class="sidebar-nav-item" data-target="section-color">🎨 カラーテーマ</button>
       <button class="sidebar-nav-item" data-target="section-font">📝 書体設定</button>
@@ -1003,18 +1003,48 @@ function saveSection(section, btn) {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+
+    /* siteColors / siteFonts / siteContent も同期更新 */
+    syncSubKeys(d);
+
     /* ボタンを一時的に「保存済み」表示 */
     if (btn) {
       const orig = btn.textContent;
       btn.classList.add('saved');
       btn.textContent = '✓ 保存しました！';
-      setTimeout(() => { btn.classList.remove('saved'); btn.textContent = orig; }, 2000);
+      setTimeout(() => { btn.classList.remove('saved'); btn.textContent = orig; }, 2200);
     }
   } catch(e) {
     showToast(e.name === 'QuotaExceededError'
       ? '⚠ 容量不足です。不要な画像を削除してください。'
       : '保存に失敗しました');
   }
+}
+
+/* ── サブキー同期（siteColors / siteFonts / siteContent） ── */
+function syncSubKeys(d) {
+  try {
+    localStorage.setItem('siteColors', JSON.stringify({
+      bgColor:     d.colors?.bg         || '',
+      textColor:   d.colors?.text       || '',
+      accentColor: d.colors?.accent     || '',
+      headerBg:    d.colors?.headerBg   || '',
+      titleColor:  d.colors?.titleColor || '',
+      surface:     d.colors?.surface    || '',
+      textLight:   d.colors?.textLight  || '',
+    }));
+    localStorage.setItem('siteFonts', JSON.stringify({
+      bodyFont:  d.fonts?.body    || '',
+      titleFont: d.fonts?.display || '',
+      catchFont: d.fonts?.catch   || '',
+    }));
+    localStorage.setItem('siteContent', JSON.stringify({
+      catchCopy:   d.catchcopy || '',
+      subCopy:     d.subcopy   || '',
+      profileText: d.profile   || '',
+      lineUrl:     d.lineUrl   || '',
+    }));
+  } catch(e) {}
 }
 
 /* ── 全体保存 ── */
@@ -1083,7 +1113,32 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-    showToast('✓ 保存しました');
+
+    /* ── 新キーにも書き出し（各ページの同期スクリプト用） ── */
+    localStorage.setItem('siteColors', JSON.stringify({
+      bgColor:     d.colors?.bg         || '',
+      textColor:   d.colors?.text       || '',
+      accentColor: d.colors?.accent     || '',
+      headerBg:    d.colors?.headerBg   || '',
+      titleColor:  d.colors?.titleColor || '',
+      surface:     d.colors?.surface    || '',
+      textLight:   d.colors?.textLight  || '',
+    }));
+    localStorage.setItem('siteFonts', JSON.stringify({
+      bodyFont:  d.fonts?.body    || '',
+      titleFont: d.fonts?.display || '',
+      catchFont: d.fonts?.catch   || '',
+    }));
+    localStorage.setItem('siteContent', JSON.stringify({
+      catchCopy:   d.catchcopy || '',
+      subCopy:     d.subcopy   || '',
+      profileText: d.profile   || '',
+      lineUrl:     d.lineUrl   || '',
+    }));
+
+    showToast('✓ 保存しました！全ページに反映されます');
+    /* 保存完了アラートも念のため */
+    setTimeout(() => alert('💾 保存完了！\n「サイトを確認する」を押してHPを確認してください。'), 300);
   } catch(e) {
     if (e.name === 'QuotaExceededError') {
       showToast('⚠ 容量不足です。不要な画像を削除してください。');
