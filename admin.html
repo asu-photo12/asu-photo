@@ -28,14 +28,39 @@
 <!-- ===== ADMIN HEADER ===== -->
 <div class="admin-header" id="adminHeader" style="display:none">
   <h1>Asu Photo — 管理画面</h1>
+  <button class="sidebar-toggle" id="sidebarToggle">☰ メニュー</button>
   <button class="btn-logout" id="logoutBtn">ログアウト</button>
 </div>
 
-<!-- ===== ADMIN PANEL ===== -->
-<div class="admin-wrap" id="adminWrap">
+<!-- ===== ADMIN LAYOUT ===== -->
+<div class="admin-layout" id="adminLayout" style="display:none">
 
-  <!-- -1. カラーテーマ設定 -->
-  <div class="admin-section-card">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-logo">Asu Photo</div>
+    <nav>
+      <button class="sidebar-nav-item" data-target="section-color">🎨 カラーテーマ</button>
+      <button class="sidebar-nav-item" data-target="section-font">📝 書体設定</button>
+      <button class="sidebar-nav-item" data-target="section-catch">✏️ キャッチコピー</button>
+      <button class="sidebar-nav-item" data-target="section-images">🖼️ ヒーロー写真</button>
+      <button class="sidebar-nav-item" data-target="section-planimgs">🖼️ プランカード写真</button>
+      <button class="sidebar-nav-item" data-target="section-gallery">🖼️ ギャラリー画像</button>
+      <button class="sidebar-nav-item" data-target="section-profile">👤 プロフィール</button>
+      <button class="sidebar-nav-item" data-target="section-plans">📋 撮影メニュー・料金</button>
+      <button class="sidebar-nav-item" data-target="section-reviews">⭐ お客様の声</button>
+      <button class="sidebar-nav-item" data-target="section-faq">❓ よくある質問</button>
+      <button class="sidebar-nav-item" data-target="section-line">🔗 LINE設定</button>
+    </nav>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main content -->
+  <div class="admin-main">
+  <div class="admin-main-inner">
+  <div class="admin-wrap active" id="adminWrap">
+
+  <!-- カラーテーマ設定 -->
+  <div class="admin-section-card" id="section-color">
     <h2>カラーテーマ設定</h2>
 
     <!-- プリセット -->
@@ -107,55 +132,64 @@
     </div>
   </div>
 
-  <!-- 0. 書体設定 -->
-  <div class="admin-section-card">
+  <!-- 書体設定 -->
+  <div class="admin-section-card" id="section-font">
     <h2>書体設定</h2>
 
     <div class="form-group">
-      <label class="form-label">本文フォント（全体）— 10種類</label>
-      <div class="fsp-wrap" id="fontBodyWrap">
-        <div class="fsp-display" id="fontBodyDisplay">
-          <div class="fsp-display-inner">
-            <span class="fsp-display-name">読み込み中...</span>
-          </div>
-        </div>
-        <div class="fsp-dropdown" id="fontBodyDropdown"></div>
-      </div>
-      <input type="hidden" id="fontBody">
+      <label class="form-label">本文フォント（全体）</label>
+      <select class="font-select" id="fontBody" onchange="onFontChange('fontBody','prevBody','--font-body',this.value)">
+        <option value="'Noto Sans JP', sans-serif"        style="font-family:'Noto Sans JP',sans-serif">Noto Sans JP — 読みやすいゴシック</option>
+        <option value="'Noto Serif JP', serif"            style="font-family:'Noto Serif JP',serif">Noto Serif JP — 上品な明朝体</option>
+        <option value="'M PLUS Rounded 1c', sans-serif"   style="font-family:'M PLUS Rounded 1c',sans-serif">M PLUS Rounded 1c — 丸ゴシック・やわらかい</option>
+        <option value="'M PLUS 1p', sans-serif"           style="font-family:'M PLUS 1p',sans-serif">M PLUS 1p — スタンダードゴシック</option>
+        <option value="'Kosugi Maru', sans-serif"         style="font-family:'Kosugi Maru',sans-serif">Kosugi Maru — ポップな丸ゴシック</option>
+        <option value="'Sawarabi Gothic', sans-serif"     style="font-family:'Sawarabi Gothic',sans-serif">Sawarabi Gothic — さわらびゴシック</option>
+        <option value="'Sawarabi Mincho', serif"          style="font-family:'Sawarabi Mincho',serif">Sawarabi Mincho — さわらび明朝</option>
+        <option value="'Zen Kaku Gothic New', sans-serif" style="font-family:'Zen Kaku Gothic New',sans-serif">Zen Kaku Gothic New — 禅角ゴシック</option>
+        <option value="'Shippori Mincho', serif"          style="font-family:'Shippori Mincho',serif">Shippori Mincho — しっぽり明朝・和風</option>
+        <option value="'BIZ UDPGothic', sans-serif"       style="font-family:'BIZ UDPGothic',sans-serif">BIZ UDPGothic — ビジネス向けゴシック</option>
+      </select>
       <p class="font-preview-text" id="prevBody">あのイーハトーヴォのすきとおった風　家族の笑顔を残す出張カメラマン</p>
     </div>
 
     <div class="form-group">
-      <label class="form-label">セクションタイトルフォント（英字）— 10種類</label>
-      <div class="fsp-wrap" id="fontDisplayWrap">
-        <div class="fsp-display" id="fontDisplayDisplay">
-          <div class="fsp-display-inner">
-            <span class="fsp-display-name">読み込み中...</span>
-          </div>
-        </div>
-        <div class="fsp-dropdown" id="fontDisplayDropdown"></div>
-      </div>
-      <input type="hidden" id="fontDisplay">
+      <label class="form-label">セクションタイトルフォント（英字）</label>
+      <select class="font-select" id="fontDisplay" onchange="onFontChange('fontDisplay','prevDisplay','--font-display',this.value)">
+        <option value="'Cormorant Garamond', serif"  style="font-family:'Cormorant Garamond',serif;font-style:italic">Cormorant Garamond — エレガントなセリフ</option>
+        <option value="'Playfair Display', serif"    style="font-family:'Playfair Display',serif;font-style:italic">Playfair Display — 上品なセリフ</option>
+        <option value="'Libre Baskerville', serif"   style="font-family:'Libre Baskerville',serif;font-style:italic">Libre Baskerville — クラシックなセリフ</option>
+        <option value="'Lora', serif"                style="font-family:'Lora',serif;font-style:italic">Lora — やわらかいセリフ</option>
+        <option value="'Josefin Sans', sans-serif"   style="font-family:'Josefin Sans',sans-serif">Josefin Sans — スタイリッシュなサンセリフ</option>
+        <option value="'Raleway', sans-serif"        style="font-family:'Raleway',sans-serif">Raleway — 細くおしゃれなサンセリフ</option>
+        <option value="'Montserrat', sans-serif"     style="font-family:'Montserrat',sans-serif">Montserrat — モダンなサンセリフ</option>
+        <option value="'EB Garamond', serif"         style="font-family:'EB Garamond',serif;font-style:italic">EB Garamond — クラシックガラモン</option>
+        <option value="'Cinzel', serif"              style="font-family:'Cinzel',serif">Cinzel — ローマ字風・格調高い</option>
+        <option value="'Great Vibes', cursive"       style="font-family:'Great Vibes',cursive">Great Vibes — エレガントな筆記体</option>
+      </select>
       <p class="font-preview-text" id="prevDisplay" style="font-size:26px;font-style:italic;letter-spacing:2px;">Plan / Gallery / Profile</p>
     </div>
 
     <div class="form-group">
-      <label class="form-label">キャッチコピーフォント — 10種類</label>
-      <div class="fsp-wrap" id="fontCatchWrap">
-        <div class="fsp-display" id="fontCatchDisplay">
-          <div class="fsp-display-inner">
-            <span class="fsp-display-name">読み込み中...</span>
-          </div>
-        </div>
-        <div class="fsp-dropdown" id="fontCatchDropdown"></div>
-      </div>
-      <input type="hidden" id="fontCatch">
+      <label class="form-label">キャッチコピーフォント</label>
+      <select class="font-select" id="fontCatch" onchange="onFontChange('fontCatch','prevCatch','--font-catch',this.value)">
+        <option value="'Noto Serif JP', serif"       style="font-family:'Noto Serif JP',serif">Noto Serif JP — 上品な明朝体</option>
+        <option value="'Shippori Mincho', serif"     style="font-family:'Shippori Mincho',serif">Shippori Mincho — しっぽり明朝</option>
+        <option value="'Zen Old Mincho', serif"      style="font-family:'Zen Old Mincho',serif">Zen Old Mincho — 禅旧明朝</option>
+        <option value="'Hina Mincho', serif"         style="font-family:'Hina Mincho',serif">Hina Mincho — ひな明朝・繊細</option>
+        <option value="'Kaisei Decol', serif"        style="font-family:'Kaisei Decol',serif">Kaisei Decol — カイセイデコール</option>
+        <option value="'Yomogi', cursive"            style="font-family:'Yomogi',cursive">Yomogi — よもぎ・手書き風</option>
+        <option value="'Reggae One', cursive"        style="font-family:'Reggae One',cursive">Reggae One — レゲエOne・インパクト</option>
+        <option value="'Dela Gothic One', cursive"   style="font-family:'Dela Gothic One',cursive">Dela Gothic One — デラゴシック・太い</option>
+        <option value="'Zen Maru Gothic', sans-serif"style="font-family:'Zen Maru Gothic',sans-serif">Zen Maru Gothic — 禅丸ゴシック</option>
+        <option value="'Klee One', cursive"          style="font-family:'Klee One',cursive">Klee One — クレーOne・手書き風</option>
+      </select>
       <p class="font-preview-text" id="prevCatch" style="font-size:18px;letter-spacing:3px;">特別な日だけじゃない　いつもの幸せを</p>
     </div>
   </div>
 
-  <!-- 1. テキスト -->
-  <div class="admin-section-card">
+  <!-- テキスト -->
+  <div class="admin-section-card" id="section-catch">
     <h2>キャッチコピー・説明文</h2>
     <div class="form-group">
       <label class="form-label">キャッチコピー</label>
@@ -167,25 +201,25 @@
     </div>
   </div>
 
-  <!-- 2. ヒーロー写真 -->
-  <div class="admin-section-card">
+  <!-- ヒーロー写真 -->
+  <div class="admin-section-card" id="section-images">
     <h2>ヒーロー写真（4枚・縦長 3:4）</h2>
     <div id="heroImgGroup"></div>
   </div>
 
-  <!-- 3. プランカード写真 -->
-  <div class="admin-section-card">
+  <!-- プランカード写真 -->
+  <div class="admin-section-card" id="section-planimgs">
     <h2>プランカード写真（縦長 3:4）</h2>
     <div id="planImgGroup"></div>
   </div>
 
-  <!-- 4. ギャラリーセクション（トップ用 2枚） -->
-  <div class="admin-section-card">
+  <!-- ギャラリー -->
+  <div class="admin-section-card" id="section-gallery">
     <h2>ギャラリープレビュー写真（トップページ用・縦長 2:3）</h2>
     <div id="galleryIdxGroup"></div>
   </div>
 
-  <!-- 5. ギャラリーページ写真（複数） -->
+  
   <div class="admin-section-card">
     <h2>ギャラリーページ写真（正方形グリッド）</h2>
     <div class="gallery-upload-grid" id="galleryGrid"></div>
@@ -196,8 +230,8 @@
     </div>
   </div>
 
-  <!-- 6. プロフィール -->
-  <div class="admin-section-card">
+  
+  <div class="admin-section-card" id="section-profile">
     <h2>プロフィール</h2>
     <div class="img-upload-row">
       <div class="img-preview-wrap">
@@ -218,8 +252,8 @@
     </div>
   </div>
 
-  <!-- 7. 撮影プランと料金 -->
-  <div class="admin-section-card">
+  
+  <div class="admin-section-card" id="section-plans">
     <h2>撮影プランと料金</h2>
 
     <!-- 家族写真 -->
@@ -244,22 +278,22 @@
     </div>
   </div>
 
-  <!-- 8. お客様の声 -->
-  <div class="admin-section-card">
+  
+  <div class="admin-section-card" id="section-reviews">
     <h2>お客様の声</h2>
     <div id="reviewList"></div>
     <button class="btn-add-item" onclick="addReview()">＋ 追加</button>
   </div>
 
-  <!-- 9. FAQ -->
-  <div class="admin-section-card">
+  
+  <div class="admin-section-card" id="section-faq">
     <h2>よくある質問（FAQ）</h2>
     <div id="faqList"></div>
     <button class="btn-add-item" onclick="addFaq()">＋ 追加</button>
   </div>
 
-  <!-- 10. LINE URL -->
-  <div class="admin-section-card">
+  
+  <div class="admin-section-card" id="section-line">
     <h2>LINE公式アカウントURL</h2>
     <div class="form-group">
       <label class="form-label">LINE URL</label>
@@ -272,6 +306,9 @@
   </div>
 
 </div><!-- /admin-wrap -->
+  </div><!-- /admin-main-inner -->
+  </div><!-- /admin-main -->
+</div><!-- /admin-layout -->
 
 <div class="toast" id="toast"></div>
 
@@ -285,8 +322,9 @@ function checkLogin() {
 function showAdmin() {
   document.getElementById('loginWrap').style.display = 'none';
   document.getElementById('adminHeader').style.display = 'flex';
-  document.getElementById('adminWrap').classList.add('active');
+  document.getElementById('adminLayout').style.display = 'flex';
   loadAll();
+  initSidebar();
 }
 
 if (checkLogin()) showAdmin();
@@ -730,83 +768,78 @@ function updatePreviewBar() {
   });
 }
 
-/* ── Font selects（カスタムドロップダウン） ── */
+/* ── Font selects（native select） ── */
+function onFontChange(selId, prevId, cssVar, val) {
+  const sel = document.getElementById(selId);
+  const prev = document.getElementById(prevId);
+  if (sel)  sel.style.fontFamily = val;
+  if (prev) prev.style.fontFamily = val;
+  document.documentElement.style.setProperty(cssVar, val);
+}
+
 function buildFontSelects() {
   const d = getData();
   const saved = d.fonts || {};
-
   const configs = [
-    { wrapId: 'fontBodyWrap',    dispId: 'fontBodyDisplay',    dropId: 'fontBodyDropdown',    hiddenId: 'fontBody',    prevId: 'prevBody',    key: 'body',    cssVar: '--font-body',    opts: FONT_OPTIONS.body },
-    { wrapId: 'fontDisplayWrap', dispId: 'fontDisplayDisplay', dropId: 'fontDisplayDropdown', hiddenId: 'fontDisplay', prevId: 'prevDisplay', key: 'display', cssVar: '--font-display', opts: FONT_OPTIONS.display },
-    { wrapId: 'fontCatchWrap',   dispId: 'fontCatchDisplay',   dropId: 'fontCatchDropdown',   hiddenId: 'fontCatch',   prevId: 'prevCatch',   key: 'catch',   cssVar: '--font-catch',   opts: FONT_OPTIONS.catch },
+    { id: 'fontBody',    prevId: 'prevBody',    key: 'body',    cssVar: '--font-body' },
+    { id: 'fontDisplay', prevId: 'prevDisplay', key: 'display', cssVar: '--font-display' },
+    { id: 'fontCatch',   prevId: 'prevCatch',   key: 'catch',   cssVar: '--font-catch' },
   ];
+  configs.forEach(({ id, prevId, key, cssVar }) => {
+    const sel  = document.getElementById(id);
+    const prev = document.getElementById(prevId);
+    if (!sel) return;
+    const val = saved[key] || sel.options[0].value;
+    sel.value = val;
+    onFontChange(id, prevId, cssVar, val);
+  });
+}
 
-  configs.forEach(({ wrapId, dispId, dropId, hiddenId, prevId, key, cssVar, opts }) => {
-    const disp   = document.getElementById(dispId);
-    const drop   = document.getElementById(dropId);
-    const hidden = document.getElementById(hiddenId);
-    const prev   = document.getElementById(prevId);
-    if (!disp || !drop || !hidden || !prev) return;
+/* ── Sidebar ── */
+function initSidebar() {
+  const sidebar  = document.getElementById('adminSidebar');
+  const overlay  = document.getElementById('sidebarOverlay');
+  const toggle   = document.getElementById('sidebarToggle');
 
-    const current = saved[key] || opts[0].value;
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  }
 
-    /* 表示名を更新 */
-    function updateDisplay(val) {
-      const opt = opts.find(o => o.value === val) || opts[0];
-      disp.innerHTML = `<div class="fsp-display-inner">
-        <span class="fsp-display-name" style="font-family:${opt.value}">${opt.label}</span>
-        <span class="fsp-display-sub">${opt.sub}</span>
-      </div>`;
-      prev.style.fontFamily = opt.value;
-      document.documentElement.style.setProperty(cssVar, opt.value);
-      hidden.value = opt.value;
-      /* active 更新 */
-      drop.querySelectorAll('.fsp-option').forEach(el => {
-        el.classList.toggle('active', el.dataset.value === opt.value);
-      });
-    }
+  toggle  && toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+  overlay && overlay.addEventListener('click', closeSidebar);
 
-    /* オプションリスト構築 */
-    drop.innerHTML = '';
-    opts.forEach(opt => {
-      const item = document.createElement('div');
-      item.className = 'fsp-option' + (opt.value === current ? ' active' : '');
-      item.dataset.value = opt.value;
-      item.innerHTML = `<span class="fsp-option-name" style="font-family:${opt.value}">${opt.label}</span>
-                        <span class="fsp-option-sub">${opt.sub}</span>`;
-      item.addEventListener('click', e => {
-        e.stopPropagation();
-        updateDisplay(opt.value);
-        drop.classList.remove('open');
-        disp.classList.remove('open');
-      });
-      drop.appendChild(item);
-    });
-
-    /* トグル */
-    disp.addEventListener('click', e => {
-      e.stopPropagation();
-      const opening = !drop.classList.contains('open');
-      /* 他を全閉 */
-      document.querySelectorAll('.fsp-dropdown').forEach(d => d.classList.remove('open'));
-      document.querySelectorAll('.fsp-display').forEach(d => d.classList.remove('open'));
-      if (opening) {
-        drop.classList.add('open');
-        disp.classList.add('open');
-        /* 選択済み項目にスクロール */
-        const active = drop.querySelector('.fsp-option.active');
-        if (active) active.scrollIntoView({ block: 'nearest' });
+  /* Section scroll */
+  document.querySelectorAll('.sidebar-nav-item[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.target);
+      if (target) {
+        const yPos = target.getBoundingClientRect().top + window.scrollY - 72;
+        window.scrollTo({ top: yPos, behavior: 'smooth' });
       }
+      if (window.innerWidth <= 768) closeSidebar();
     });
-
-    updateDisplay(current);
   });
 
-  /* 外クリックで全閉 */
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.fsp-dropdown').forEach(d => d.classList.remove('open'));
-    document.querySelectorAll('.fsp-display').forEach(d => d.classList.remove('open'));
-  });
+  /* IntersectionObserver for active highlight */
+  const sections = document.querySelectorAll('.admin-section-card[id]');
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.target === id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+    sections.forEach(s => obs.observe(s));
+  }
 }
 
 /* ── Load all ── */
@@ -859,9 +892,9 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
   /* fonts */
   d.fonts = {
-    body:    document.getElementById('fontBody').value,
-    display: document.getElementById('fontDisplay').value,
-    catch:   document.getElementById('fontCatch').value,
+    body:    document.getElementById('fontBody')?.value    || '',
+    display: document.getElementById('fontDisplay')?.value || '',
+    catch:   document.getElementById('fontCatch')?.value   || '',
   };
   applyFonts();
 
