@@ -32,6 +32,25 @@
     </div>
   </section>
 
+  <!-- PROFILE -->
+  <section id="profile">
+    <div class="profile-inner">
+      <!-- 写真（影付き） -->
+      <div class="profile-photo-wrap">
+        <div class="profile-photo-shadow"></div>
+        <img id="profileImg" class="profile-img" src="" alt="プロフィール写真">
+      </div>
+      <!-- テキストエリア -->
+      <div class="profile-text">
+        <p class="profile-label">Profile</p>
+        <h2 class="profile-name-en">Asu Photo</h2>
+        <h3 class="profile-name-ja">出張撮影カメラマン</h3>
+        <p class="profile-desc" id="profileDesc">関東を中心に出張撮影を行っているカメラマンです。家族写真・七五三・お宮参りを専門とし、日常の中にある特別な瞬間を大切に記録します。「写真を見るたびに、あの日に戻れる」そんな一枚をお届けしたいと思っています。初めての方も安心していただけるよう、撮影前のご相談を丁寧に行っています。</p>
+        <p class="profile-area">📍 撮影エリア：関東全域（ご希望の場所へ出張）</p>
+      </div>
+    </div>
+  </section>
+
   <!-- PLAN -->
   <section id="plan">
     <div class="section-title">
@@ -50,30 +69,13 @@
     <div class="gallery-preview-grid" role="link" tabindex="0"
          onclick="location.href='gallery.html'"
          onkeydown="if(event.key==='Enter')location.href='gallery.html'">
-      <img id="gpImg1" src="" alt="ギャラリー写真1">
-      <img id="gpImg2" src="" alt="ギャラリー写真2">
+      <img id="gpImg1" src="" alt="ギャラリー写真1" loading="lazy">
+      <img id="gpImg2" src="" alt="ギャラリー写真2" loading="lazy">
+      <img id="gpImg3" src="" alt="ギャラリー写真3" loading="lazy">
+      <img id="gpImg4" src="" alt="ギャラリー写真4" loading="lazy">
     </div>
     <div class="gallery-more">
       <a href="gallery.html" class="btn-outline">すべて見る</a>
-    </div>
-  </section>
-
-  <!-- PROFILE -->
-  <section id="profile">
-    <div class="section-title">
-      <span class="en-title">Profile</span>
-      <span class="ja-sub">プロフィール</span>
-    </div>
-    <div class="profile-inner">
-      <div class="profile-img-wrap">
-        <img id="profileImg" class="profile-img" src="" alt="プロフィール写真">
-      </div>
-      <div class="profile-text">
-        <h3>Asu Photo</h3>
-        <p class="profile-title">PHOTOGRAPHER</p>
-        <p class="profile-desc profile-text" id="profileDesc">関東を中心に出張撮影を行っているカメラマンです。家族写真・七五三・お宮参りを専門とし、日常の中にある特別な瞬間を大切に記録します。「写真を見るたびに、あの日に戻れる」そんな一枚をお届けしたいと思っています。初めての方も安心していただけるよう、撮影前のご相談を丁寧に行っています。</p>
-        <p class="profile-area">📍 撮影エリア：関東全域（ご希望の場所へ出張）</p>
-      </div>
     </div>
   </section>
 
@@ -100,10 +102,34 @@
     <div class="line-cta-inner">
       <h2>ご予約・お問い合わせ</h2>
       <p>ご不明な点やご要望など、お気軽にLINEからご連絡ください。<br>撮影の流れやプランについてもご相談いただけます。</p>
-      <a href="#" class="btn-line line-btn" id="lineBtn" target="_blank" rel="noopener">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-        LINEで予約する
-      </a>
+      <div style="display:flex; gap:20px; justify-content:center; align-items:center; margin-top:24px;">
+        <!-- LINE アイコンボタン -->
+        <a href="#" id="lineBtn" target="_blank" rel="noopener noreferrer"
+           style="display:inline-flex; align-items:center; justify-content:center;
+                  width:56px; height:56px; border-radius:50%;
+                  background:#06C755; text-decoration:none;"
+           aria-label="LINEで予約する">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.02 2 11c0 3.07 1.6 5.78 4.07 7.62L5.5 22l4.13-1.37C10.37 20.86 11.17 21 12 21c5.52 0 10-4.02 10-9S17.52 2 12 2z"/>
+          </svg>
+        </a>
+        <!-- Instagram アイコンボタン -->
+        <a href="https://www.instagram.com/ここを差し替え/" target="_blank" rel="noopener noreferrer"
+           style="display:inline-flex; align-items:center; justify-content:center;
+                  width:56px; height:56px; border-radius:50%;
+                  background:radial-gradient(circle at 30% 110%,
+                    #f09433 0%, #e6683c 25%, #dc2743 50%,
+                    #cc2366 75%, #bc1888 100%);
+                  text-decoration:none;"
+           aria-label="Instagramを見る">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1.2" fill="white" stroke="none"/>
+          </svg>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -129,8 +155,10 @@ const PH = {
   planFamily: 'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=400&h=533&fit=crop&q=80',
   plan753:    'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&h=533&fit=crop&q=80',
   planOmiya:  'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=400&h=533&fit=crop&q=80',
-  gpImg1:     'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=900&fit=crop&q=80',
-  gpImg2:     'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=600&h=900&fit=crop&q=80',
+  gpImg1:     'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&h=450&fit=crop&q=80',
+  gpImg2:     'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800&h=450&fit=crop&q=80',
+  gpImg3:     'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&h=450&fit=crop&q=80',
+  gpImg4:     'https://images.unsplash.com/photo-1484665761550-b80f81b7c2fa?w=800&h=450&fit=crop&q=80',
   profile:    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=533&fit=crop&q=80',
 };
 
@@ -146,6 +174,8 @@ if (d.profile) document.getElementById('profileDesc').textContent = d.profile;
 
 document.getElementById('gpImg1').src = getImage('gallery_idx_1', PH.gpImg1);
 document.getElementById('gpImg2').src = getImage('gallery_idx_2', PH.gpImg2);
+document.getElementById('gpImg3').src = getImage('gallery_idx_3', PH.gpImg3);
+document.getElementById('gpImg4').src = getImage('gallery_idx_4', PH.gpImg4);
 
 /* plan cards */
 const planDefs = [
