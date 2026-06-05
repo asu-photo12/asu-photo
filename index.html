@@ -21,14 +21,10 @@
 
   <!-- HERO -->
   <section id="hero">
-    <div class="hero-fullscreen">
-      <div class="hero-slides" id="heroSlides"></div>
-      <div class="hero-overlay">
-        <div class="hero-text-wrap">
-          <p class="hero-catch catch-copy" id="heroCatch">特別な日だけじゃない<br>いつもの幸せを</p>
-          <p class="hero-sub sub-copy" id="heroSub">笑顔も、泣き顔も<br>未来で愛おしくなる瞬間を写します</p>
-        </div>
-      </div>
+    <div class="hero-slider" id="heroSlider"></div>
+    <div class="hero-text-wrap">
+      <p class="hero-catch catch-copy" id="heroCatch">特別な日だけじゃない<br>いつもの幸せを</p>
+      <p class="hero-sub sub-copy" id="heroSub">笑顔も、泣き顔も<br>未来で愛おしくなる瞬間を写します</p>
     </div>
   </section>
 
@@ -66,9 +62,7 @@
       <span class="en-title">Gallery</span>
       <span class="ja-sub">ギャラリー</span>
     </div>
-    <div class="gallery-preview-grid" role="link" tabindex="0"
-         onclick="location.href='gallery.html'"
-         onkeydown="if(event.key==='Enter')location.href='gallery.html'">
+    <div class="gallery-preview-grid">
       <img id="gpImg1" src="" alt="ギャラリー写真1" loading="lazy">
       <img id="gpImg2" src="" alt="ギャラリー写真2" loading="lazy">
       <img id="gpImg3" src="" alt="ギャラリー写真3" loading="lazy">
@@ -232,16 +226,21 @@ faqs.forEach(f => {
   faqList.appendChild(item);
 });
 
-/* hero slideshow */
+/* hero slider（PC：3枚横並び / スマホ：opacity自動切替） */
 (function() {
+  var PH_SLIDES = [
+    'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&h=1200&fit=crop',
+    'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800&h=1200&fit=crop',
+    'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&h=1200&fit=crop',
+  ];
   var imgs = [
-    getImage('hero1', PH.hero[0]),
-    getImage('hero2', PH.hero[1]),
-    getImage('hero3', PH.hero[2]),
-    getImage('hero4', PH.hero[3]),
+    getImage('hero1', PH_SLIDES[0]),
+    getImage('hero2', PH_SLIDES[1]),
+    getImage('hero3', PH_SLIDES[2]),
   ].filter(Boolean);
-  var container = document.getElementById('heroSlides');
-  if (!container || !imgs.length) return;
+
+  var slider = document.getElementById('heroSlider');
+  if (!slider || !imgs.length) return;
 
   imgs.forEach(function(src, i) {
     var slide = document.createElement('div');
@@ -251,32 +250,115 @@ faqs.forEach(f => {
     img.alt = '撮影写真';
     img.loading = i === 0 ? 'eager' : 'lazy';
     slide.appendChild(img);
-    container.appendChild(slide);
+    slider.appendChild(slide);
   });
 
-  var slides = container.querySelectorAll('.hero-slide');
-  var current = 0;
-  var timer;
+  /* スマホのみ：opacity自動切替 */
+  var mobileIdx = 0;
+  var mobileTimer;
 
-  function next() {
-    slides[current].classList.remove('active');
-    current = (current + 1) % slides.length;
-    slides[current].classList.add('active');
+  function isMobile() { return window.innerWidth <= 768; }
+
+  function nextMobile() {
+    var slides = slider.querySelectorAll('.hero-slide');
+    if (!slides.length) return;
+    slides[mobileIdx].classList.remove('active');
+    mobileIdx = (mobileIdx + 1) % slides.length;
+    slides[mobileIdx].classList.add('active');
   }
-  function start() { timer = setInterval(next, 3000); }
-  function stop()  { clearInterval(timer); }
+  function startMobile() { if (isMobile()) mobileTimer = setInterval(nextMobile, 3000); }
+  function stopMobile()  { clearInterval(mobileTimer); }
 
-  start();
-
-  /* タブ切り替え時の停止・再開（iOS Safari対応） */
+  startMobile();
+  window.addEventListener('resize', function() { stopMobile(); startMobile(); }, { passive: true });
   document.addEventListener('visibilitychange', function() {
-    if (document.hidden) { stop(); } else { stop(); start(); }
+    document.hidden ? stopMobile() : (stopMobile(), startMobile());
   });
+})();
 
-  /* タッチ操作でスライドが止まらないようにする */
-  container.addEventListener('touchstart', function() {}, { passive: true });
-  container.addEventListener('touchmove',  function() {}, { passive: true });
-  container.addEventListener('touchend',   function() { stop(); start(); }, { passive: true });
+/* ヘッダー：ヒーロー上で透明化、スクロールで戻す */
+(function() {
+  var header = document.querySelector('header');
+  if (!header) return;
+  function updateHeader() {
+    var hero = document.getElementById('hero');
+    var threshold = hero ? hero.offsetHeight - 80 : window.innerHeight;
+    if (window.scrollY < threshold) {
+      header.classList.add('header-transparent');
+    } else {
+      header.classList.remove('header-transparent');
+    }
+  }
+  window.addEventListener('scroll', updateHeader, { passive: true });
+  updateHeader();
+})();
+
+/* ── フェードイン設定（管理画面連携） ── */
+(function() {
+  var fadeSettings = {};
+  try { fadeSettings = JSON.parse(localStorage.getItem('fadeSettings') || '{}'); } catch(e) {}
+
+  /* fadeSettings が空（未設定）の場合はデフォルトで全ON */
+  if (Object.keys(fadeSettings).length === 0) {
+    fadeSettings = { hero: true, profile: true, plan: true, gallery: true, voice: true, faq: true, contact: true };
+  }
+
+  /* セクションキー → 対象セレクタのマッピング */
+  var sectionMap = {
+    hero:    '#hero .hero-text-wrap',
+    profile: '#profile',
+    plan:    '#plan',
+    gallery: '#gallery-preview',
+    voice:   '#reviews',
+    faq:     '#faq',
+    contact: '#line-cta',
+  };
+
+  if (!('IntersectionObserver' in window)) return; /* 非対応ブラウザはスキップ */
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); /* 一度表示したら解除 */
+      }
+    });
+  }, { threshold: 0.12 });
+
+  Object.keys(fadeSettings).forEach(function(key) {
+    if (fadeSettings[key]) {
+      var el = document.querySelector(sectionMap[key]);
+      if (el) {
+        el.classList.add('fade-section');
+        observer.observe(el);
+      }
+    }
+  });
+})();
+
+/* ── 画像位置・大きさ設定を適用（管理画面連携） ── */
+(function applyImageSettings() {
+  var saved = localStorage.getItem('imageSettings');
+  if (!saved) return;
+  var s;
+  try { s = JSON.parse(saved); } catch(e) { return; }
+
+  function applyToImg(selector, cfg) {
+    document.querySelectorAll(selector).forEach(function(img) {
+      img.style.objectPosition = cfg.x + '% ' + cfg.y + '%';
+      img.style.transform = 'scale(' + (cfg.s / 100) + ')';
+      img.style.transformOrigin = 'center center';
+    });
+  }
+
+  if (s.hero1)    applyToImg('.hero-slider .hero-slide:nth-child(1) img', s.hero1);
+  if (s.hero2)    applyToImg('.hero-slider .hero-slide:nth-child(2) img', s.hero2);
+  if (s.hero3)    applyToImg('.hero-slider .hero-slide:nth-child(3) img', s.hero3);
+  if (s.profile)  applyToImg('#profileImg', s.profile);
+  if (s.gallery1) applyToImg('#gpImg1', s.gallery1);
+  if (s.gallery2) applyToImg('#gpImg2', s.gallery2);
+  if (s.gallery3) applyToImg('#gpImg3', s.gallery3);
+  if (s.gallery4) applyToImg('#gpImg4', s.gallery4);
 })();
 </script>
 </body>

@@ -334,15 +334,14 @@ header.header-transparent .hamburger span {
 
 .gallery-preview-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 8px;
-  width: 100%;
-  cursor: pointer;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 .gallery-preview-grid img {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
   transition: opacity var(--ease);
@@ -1191,23 +1190,24 @@ input[type="file"] { display: none !important; }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  /* プロフィール：スマホ */
+  /* プロフィール：スマホ（横並び・白背景） */
   #profile {
-    background: #F0F0F0;
-    padding: 40px 0 0 0;
+    background: #ffffff;
+    padding: 40px 20px;
   }
 
   .profile-inner {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
+    gap: 40px;
   }
 
   .profile-photo-wrap {
     position: relative;
-    width: 75%;
-    flex: 0 0 auto;
-    max-width: 75%;
-    margin: 0 0 0 20px;
+    flex: 0 0 28%;
+    width: 28%;
+    max-width: 28%;
+    margin: 0;
   }
 
   .profile-photo-shadow {
@@ -1221,7 +1221,7 @@ input[type="file"] { display: none !important; }
     right: -16px;
     width: 100%;
     height: 100%;
-    background: #D8D8D8;
+    background: #e8e8e8;
     z-index: 0;
   }
 
@@ -1237,36 +1237,35 @@ input[type="file"] { display: none !important; }
   }
 
   .profile-text {
-    width: 100%;
-    flex: none;
-    padding: 32px 20px 40px;
+    flex: 1;
+    padding: 0 16px 0 0;
     background: #ffffff;
-    margin-top: 20px;
+    margin-top: 0;
   }
 
   .profile-label {
-    font-size: 12px;
+    font-size: 9px;
     letter-spacing: 0.15em;
     color: #999;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   .profile-name-en {
-    font-size: 32px;
+    font-size: 18px;
     font-weight: 300;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
   }
 
   .profile-name-ja {
-    font-size: 18px;
+    font-size: 12px;
     font-weight: 700;
     color: #1a1a1a;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 
   .profile-desc {
-    font-size: 15px;
-    line-height: 2;
+    font-size: 10px;
+    line-height: 1.7;
     color: #444;
     margin-bottom: 32px;
   }
@@ -1320,6 +1319,12 @@ input[type="file"] { display: none !important; }
   }
   .hero-sub {
     font-size: 0.85rem;
+  }
+
+  /* ギャラリープレビュー：スマホは2列 */
+  .gallery-preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
