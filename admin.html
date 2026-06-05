@@ -55,6 +55,8 @@
       <button class="sidebar-nav-item" data-target="section-reviews">⭐ お客様の声</button>
       <button class="sidebar-nav-item" data-target="section-faq">❓ よくある質問</button>
       <button class="sidebar-nav-item" data-target="section-line">🔗 LINE設定</button>
+      <button class="sidebar-nav-item" data-target="section-fade">✨ フェード設定</button>
+      <button class="sidebar-nav-item" data-target="section-imgadjust">📐 画像調整</button>
     </nav>
   </aside>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -318,6 +320,80 @@
       <input class="form-input" id="lineUrl" type="text" placeholder="https://line.me/ここを差し替え">
     </div>
     <button class="btn-section-save" onclick="saveSection('line', this)">✓ LINE URLを保存</button>
+  </div>
+
+  <!-- フェード設定 -->
+  <div class="admin-section-card" id="section-fade">
+    <h2>フェードイン設定</h2>
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:16px;line-height:1.7;">
+      ONにしたセクションはスクロール時にふわっとフェードインします。<br>
+      保存後にサイトを確認してください。
+    </p>
+
+    <div class="fade-setting-item">
+      <span>ヒーロー（キャッチコピー）</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-hero" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="fade-setting-item">
+      <span>プロフィール</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-profile" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="fade-setting-item">
+      <span>Plan（撮影プラン）</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-plan" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="fade-setting-item">
+      <span>Gallery（ギャラリー）</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-gallery" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="fade-setting-item">
+      <span>お客様の声</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-voice" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="fade-setting-item">
+      <span>FAQ（よくある質問）</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-faq" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="fade-setting-item">
+      <span>お問い合わせ</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="fade-contact" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <button class="btn-section-save" onclick="saveFadeSettings(this)">✓ フェード設定を保存</button>
+  </div>
+
+  <!-- 画像位置・大きさ調整 -->
+  <div class="admin-section-card" id="section-imgadjust">
+    <h2>画像の位置・大きさ調整</h2>
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:20px;line-height:1.7;">
+      スライダーで各画像の表示位置・大きさを調整し「保存する」を押してください。<br>
+      保存後にトップページを確認してください。
+    </p>
+    <div id="imgAdjustPanels"></div>
+    <button onclick="saveImageSettings(this)" class="btn-section-save" style="margin-top:24px;">
+      ✓ 画像設定を保存
+    </button>
   </div>
 
   <div class="save-bar">
@@ -937,6 +1013,113 @@ function loadAll() {
   /* reviews / faqs */
   renderReviews();
   renderFaqs();
+
+  /* fade settings */
+  loadFadeSettings();
+
+  /* image adjust panels */
+  buildImgAdjustPanels();
+}
+
+/* ── Fade settings ── */
+function loadFadeSettings() {
+  var defaults = { hero: true, profile: true, plan: true, gallery: true, voice: true, faq: true, contact: true };
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem('fadeSettings') || '{}'); } catch(e) {}
+  var settings = Object.assign({}, defaults, saved);
+  ['hero','profile','plan','gallery','voice','faq','contact'].forEach(function(key) {
+    var el = document.getElementById('fade-' + key);
+    if (el) el.checked = !!settings[key];
+  });
+}
+
+function saveFadeSettings(btn) {
+  var settings = {
+    hero:    document.getElementById('fade-hero')?.checked    ?? true,
+    profile: document.getElementById('fade-profile')?.checked ?? true,
+    plan:    document.getElementById('fade-plan')?.checked    ?? true,
+    gallery: document.getElementById('fade-gallery')?.checked ?? true,
+    voice:   document.getElementById('fade-voice')?.checked   ?? true,
+    faq:     document.getElementById('fade-faq')?.checked     ?? true,
+    contact: document.getElementById('fade-contact')?.checked ?? true,
+  };
+  localStorage.setItem('fadeSettings', JSON.stringify(settings));
+  if (btn) {
+    const orig = btn.textContent;
+    btn.classList.add('saved');
+    btn.textContent = '✓ 保存しました！';
+    setTimeout(() => { btn.classList.remove('saved'); btn.textContent = orig; }, 2200);
+  }
+}
+
+/* ── 画像位置・大きさ調整パネル ── */
+var IMG_ADJUST_DEFS = [
+  { key: 'hero1',    label: 'TOPヒーロー 1枚目' },
+  { key: 'hero2',    label: 'TOPヒーロー 2枚目' },
+  { key: 'hero3',    label: 'TOPヒーロー 3枚目' },
+  { key: 'profile',  label: 'プロフィール画像' },
+  { key: 'gallery1', label: 'ギャラリー 1枚目' },
+  { key: 'gallery2', label: 'ギャラリー 2枚目' },
+  { key: 'gallery3', label: 'ギャラリー 3枚目' },
+  { key: 'gallery4', label: 'ギャラリー 4枚目' },
+];
+
+function buildImgAdjustPanels() {
+  var wrap = document.getElementById('imgAdjustPanels');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem('imageSettings') || '{}'); } catch(e) {}
+
+  IMG_ADJUST_DEFS.forEach(function(p) {
+    var cfg = saved[p.key] || { x: 50, y: 50, s: 100 };
+    wrap.insertAdjacentHTML('beforeend',
+      '<div class="repeater-item" style="margin-bottom:14px;">' +
+        '<p style="font-size:12px;font-weight:600;letter-spacing:1px;margin-bottom:12px;color:var(--text);">' + p.label + '</p>' +
+        '<div style="margin-bottom:8px;">' +
+          '<label style="font-size:11px;color:var(--text-light);display:flex;justify-content:space-between;margin-bottom:4px;">' +
+            '上下位置 <span id="v-' + p.key + '-y" style="color:var(--text);font-weight:600;">' + cfg.y + '</span>%' +
+          '</label>' +
+          '<input type="range" min="0" max="100" value="' + cfg.y + '" id="' + p.key + '-y"' +
+            ' oninput="document.getElementById(\'v-' + p.key + '-y\').textContent=this.value" style="width:100%;">' +
+        '</div>' +
+        '<div style="margin-bottom:8px;">' +
+          '<label style="font-size:11px;color:var(--text-light);display:flex;justify-content:space-between;margin-bottom:4px;">' +
+            '左右位置 <span id="v-' + p.key + '-x" style="color:var(--text);font-weight:600;">' + cfg.x + '</span>%' +
+          '</label>' +
+          '<input type="range" min="0" max="100" value="' + cfg.x + '" id="' + p.key + '-x"' +
+            ' oninput="document.getElementById(\'v-' + p.key + '-x\').textContent=this.value" style="width:100%;">' +
+        '</div>' +
+        '<div>' +
+          '<label style="font-size:11px;color:var(--text-light);display:flex;justify-content:space-between;margin-bottom:4px;">' +
+            '大きさ <span id="v-' + p.key + '-s" style="color:var(--text);font-weight:600;">' + cfg.s + '</span>%' +
+          '</label>' +
+          '<input type="range" min="80" max="130" value="' + cfg.s + '" id="' + p.key + '-s"' +
+            ' oninput="document.getElementById(\'v-' + p.key + '-s\').textContent=this.value" style="width:100%;">' +
+        '</div>' +
+      '</div>');
+  });
+}
+
+function saveImageSettings(btn) {
+  var keys = ['hero1','hero2','hero3','profile','gallery1','gallery2','gallery3','gallery4'];
+  var settings = {};
+  keys.forEach(function(key) {
+    var xEl = document.getElementById(key + '-x');
+    var yEl = document.getElementById(key + '-y');
+    var sEl = document.getElementById(key + '-s');
+    if (xEl && yEl && sEl) {
+      settings[key] = { x: xEl.value, y: yEl.value, s: sEl.value };
+    }
+  });
+  localStorage.setItem('imageSettings', JSON.stringify(settings));
+  if (btn) {
+    var orig = btn.textContent;
+    btn.classList.add('saved');
+    btn.textContent = '✓ 保存しました！';
+    setTimeout(function() { btn.classList.remove('saved'); btn.textContent = orig; }, 2200);
+  }
 }
 
 /* ── Save ── */
