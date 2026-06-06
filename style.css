@@ -220,6 +220,16 @@ section { padding: 80px 24px; }
   align-items: flex-end;
   max-width: 44%;
   pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  padding: 16px 20px !important;
+  border-radius: 8px !important;
 }
 
 .hero-catch {
@@ -371,6 +381,22 @@ header.header-transparent {
   background-color: #ffffff !important;
   padding: 40px 16px !important;
   overflow: hidden;
+  border-top: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#profile::before,
+#profile::after {
+  display: none !important;
+  content: none !important;
+}
+
+#profile .profile-inner {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 /* 横並び共通（PC・スマホ） */
@@ -461,7 +487,7 @@ header.header-transparent {
   #profile { padding: 80px 24px; }
 
   .profile-inner {
-    gap: 60px;
+    gap: 32px;
   }
 
   .profile-photo-wrap {
@@ -1224,7 +1250,7 @@ input[type="file"] { display: none !important; }
     display: flex !important;
     flex-direction: row !important;
     align-items: flex-start !important;
-    gap: 20px !important;
+    gap: 24px !important;
   }
 
   #profile .profile-photo-wrap {

@@ -10,6 +10,34 @@
   <link rel="stylesheet" href="style.css">
   <script src="common.js"></script>
   <script>applyFonts(); applyColors();</script>
+
+  <!-- ★ Firebase Realtime Database SDK ★
+       Firebaseコンソールで取得した値を下記のYOUR_XXXXに入力してください -->
+  <script type="module">
+    import { initializeApp }                    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, set, onValue }   from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+    const firebaseConfig = {
+      apiKey:            'YOUR_API_KEY',
+      authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
+      databaseURL:       'https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com',
+      projectId:         'YOUR_PROJECT_ID',
+      storageBucket:     'YOUR_PROJECT_ID.appspot.com',
+      messagingSenderId: 'YOUR_SENDER_ID',
+      appId:             'YOUR_APP_ID'
+    };
+    try {
+      const app = initializeApp(firebaseConfig);
+      const db  = getDatabase(app);
+      window._firebaseDb      = db;
+      window._firebaseRef     = ref;
+      window._firebaseSet     = set;
+      window._firebaseOnValue = onValue;
+    } catch(e) {
+      console.warn('[Firebase] 初期化失敗（localStorageのみで動作）:', e.message);
+    }
+    window._firebaseIsReady = !!window._firebaseDb;
+    if (typeof window._onFirebaseReady === 'function') window._onFirebaseReady();
+  </script>
 </head>
 <body>
 
@@ -405,6 +433,73 @@
 <script>
 const PASS = 'asuphoto2025';
 
+/* ── Firebase ヘルパー＋保存ラッパー ── */
+function saveToFirebase(key, data) {
+  if (!window._firebaseDb) return;
+  var dbRef = window._firebaseRef(window._firebaseDb, 'siteData/' + key);
+  window._firebaseSet(dbRef, data)
+    .then(function() { console.log('[Firebase] ' + key + ' 保存完了'); })
+    .catch(function(e) { console.error('[Firebase] 保存エラー:', e); });
+}
+
+/* localStorageとFirebaseに同時保存するラッパー */
+function saveData(d) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveToFirebase(STORAGE_KEY, d);
+}
+function saveFadeData(settings) {
+  localStorage.setItem('fadeSettings', JSON.stringify(settings));
+  saveToFirebase('fadeSettings', settings);
+}
+function saveImageData(settings) {
+  localStorage.setItem('imageSettings', JSON.stringify(settings));
+  saveToFirebase('imageSettings', settings);
+}
+
+/* ── GAS（Googleスプレッドシート）連携 ── */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udSX6hRW9SFSxfoZC0_tzHK04i0k9XySxaGcN22wm_LN1c_/exec';
+
+async function saveToGAS(data) {
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    console.log('[GAS] 保存完了');
+  } catch(e) {
+    console.error('[GAS] 保存エラー:', e);
+  }
+}
+
+async function saveAllToGAS() {
+  var allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  allData.imageSettings = JSON.parse(localStorage.getItem('imageSettings') || '{}');
+  allData.fadeSettings  = JSON.parse(localStorage.getItem('fadeSettings')  || '{}');
+  await saveToGAS(allData);
+}
+
+/* Firebaseからデータを取得してlocalStorageに同期し、callbackを呼ぶ */
+function syncFromFirebase(callback) {
+  if (!window._firebaseDb) { callback(); return; }
+  var done = false;
+  var timer = setTimeout(function() {
+    if (!done) { done = true; console.warn('[Firebase] 読み込みタイムアウト'); callback(); }
+  }, 5000);
+  var dbRef = window._firebaseRef(window._firebaseDb, 'siteData');
+  window._firebaseOnValue(dbRef, function(snap) {
+    if (done) return; done = true; clearTimeout(timer);
+    var data = snap.val();
+    if (data) {
+      Object.keys(data).forEach(function(k) {
+        localStorage.setItem(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
+      });
+    }
+    callback();
+  }, { onlyOnce: true });
+}
+
 /* ── Auth ── */
 function checkLogin() {
   return sessionStorage.getItem('ap_auth') === '1';
@@ -413,8 +508,23 @@ function showAdmin() {
   document.getElementById('loginWrap').style.display = 'none';
   document.getElementById('adminHeader').style.display = 'flex';
   document.getElementById('adminLayout').style.display = 'flex';
-  loadAll();
-  initSidebar();
+
+  function doLoad() { loadAll(); initSidebar(); }
+
+  if (window._firebaseIsReady !== undefined) {
+    /* Firebase初期化完了済み（成功か失敗かに関わらず） */
+    syncFromFirebase(doLoad);
+  } else {
+    /* Firebaseモジュール読み込み中 → 完了を待つ（最大3秒） */
+    var fbTimeout = setTimeout(function() {
+      window._onFirebaseReady = null;
+      doLoad();
+    }, 3000);
+    window._onFirebaseReady = function() {
+      clearTimeout(fbTimeout);
+      syncFromFirebase(doLoad);
+    };
+  }
 }
 
 /* ログイン済みの場合の showAdmin() 呼び出しはスクリプト末尾へ移動 */
@@ -451,7 +561,7 @@ function bindImgUpload(inputId, previewId, storageKey) {
       const d = getData();
       if (!d.images) d.images = {};
       d.images[storageKey] = b64;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+      saveData(d);
       showToast('画像を保存しました');
     });
   });
@@ -570,7 +680,7 @@ document.getElementById('galleryFileInput').addEventListener('change', e => {
       d.images.gallery.push(b64);
       processed++;
       if (processed === files.length) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        saveData(d);
         buildGalleryGrid();
         showToast(`${files.length}枚の写真を追加しました`);
       }
@@ -583,7 +693,7 @@ function removeGalleryImg(idx) {
   const d = getData();
   if (d.images && Array.isArray(d.images.gallery)) {
     d.images.gallery.splice(idx, 1);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    saveData(d);
     buildGalleryGrid();
   }
 }
@@ -597,7 +707,7 @@ document.getElementById('profileFile').addEventListener('change', e => {
     const d = getData();
     if (!d.images) d.images = {};
     d.images.profile = b64;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    saveData(d);
     showToast('プロフィール写真を保存しました');
   });
 });
@@ -663,7 +773,7 @@ function addPlanItem(type) {
   if (!d.plans) d.plans = {};
   if (!d.plans[type]) d.plans[type] = JSON.parse(JSON.stringify(planDefaults[type]));
   d.plans[type].push({ en:'', ja:'', price:'', note:'', includes:[] });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveData(d);
   renderPlanList(type);
 }
 
@@ -672,7 +782,7 @@ function removePlanItem(type, idx) {
   if (!d.plans) d.plans = {};
   if (!d.plans[type]) d.plans[type] = JSON.parse(JSON.stringify(planDefaults[type]));
   d.plans[type].splice(idx, 1);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveData(d);
   renderPlanList(type);
 }
 
@@ -708,7 +818,7 @@ function addReview() {
   const d = getData();
   if (!d.reviews) d.reviews = JSON.parse(JSON.stringify(defaultReviews));
   d.reviews.push({ text:'', name:'' });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveData(d);
   renderReviews();
 }
 
@@ -716,7 +826,7 @@ function removeReview(idx) {
   const d = getData();
   if (!d.reviews) d.reviews = JSON.parse(JSON.stringify(defaultReviews));
   d.reviews.splice(idx, 1);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveData(d);
   renderReviews();
 }
 
@@ -754,7 +864,7 @@ function addFaq() {
   const d = getData();
   if (!d.faqs) d.faqs = JSON.parse(JSON.stringify(defaultFaqs));
   d.faqs.push({ q:'', a:'' });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveData(d);
   renderFaqs();
 }
 
@@ -762,7 +872,7 @@ function removeFaq(idx) {
   const d = getData();
   if (!d.faqs) d.faqs = JSON.parse(JSON.stringify(defaultFaqs));
   d.faqs.splice(idx, 1);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  saveData(d);
   renderFaqs();
 }
 
@@ -1005,12 +1115,17 @@ function saveFadeSettings(btn) {
     faq:     document.getElementById('fade-faq')?.checked     ?? true,
     contact: document.getElementById('fade-contact')?.checked ?? true,
   };
-  localStorage.setItem('fadeSettings', JSON.stringify(settings));
+  saveFadeData(settings);
   if (btn) {
-    const orig = btn.textContent;
+    var _orig = btn.textContent;
     btn.classList.add('saved');
-    btn.textContent = '✓ 保存しました！';
-    setTimeout(() => { btn.classList.remove('saved'); btn.textContent = orig; }, 2200);
+    btn.textContent = '📡 クラウドに保存中...';
+    saveAllToGAS().then(function() {
+      btn.textContent = '✓ 保存しました！';
+      setTimeout(function() { btn.classList.remove('saved'); btn.textContent = _orig; }, 2200);
+    });
+  } else {
+    saveAllToGAS();
   }
 }
 
@@ -1076,12 +1191,17 @@ function saveImageSettings(btn) {
       settings[key] = { x: xEl.value, y: yEl.value, s: sEl.value };
     }
   });
-  localStorage.setItem('imageSettings', JSON.stringify(settings));
+  saveImageData(settings);
   if (btn) {
-    var orig = btn.textContent;
+    var _orig = btn.textContent;
     btn.classList.add('saved');
-    btn.textContent = '✓ 保存しました！';
-    setTimeout(function() { btn.classList.remove('saved'); btn.textContent = orig; }, 2200);
+    btn.textContent = '📡 クラウドに保存中...';
+    saveAllToGAS().then(function() {
+      btn.textContent = '✓ 保存しました！';
+      setTimeout(function() { btn.classList.remove('saved'); btn.textContent = _orig; }, 2200);
+    });
+  } else {
+    saveAllToGAS();
   }
 }
 
@@ -1149,17 +1269,23 @@ function saveSection(section, btn) {
   }
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-    if (btn) {
-      const orig = btn.textContent;
-      btn.classList.add('saved');
-      btn.textContent = '✓ 保存しました！';
-      setTimeout(() => { btn.classList.remove('saved'); btn.textContent = orig; }, 2200);
-    }
+    saveData(d);
   } catch(e) {
     showToast(e.name === 'QuotaExceededError'
       ? '⚠ 容量不足です。不要な画像を削除してください。'
       : '保存に失敗しました');
+    return;
+  }
+  if (btn) {
+    var _orig = btn.textContent;
+    btn.classList.add('saved');
+    btn.textContent = '📡 クラウドに保存中...';
+    saveAllToGAS().then(function() {
+      btn.textContent = '✓ 保存しました！';
+      setTimeout(function() { btn.classList.remove('saved'); btn.textContent = _orig; }, 2200);
+    });
+  } else {
+    saveAllToGAS();
   }
 }
 
@@ -1221,17 +1347,27 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   });
   d.faqs = fqs;
 
+  const _btn = document.getElementById('saveBtn');
+  const _btnHTML = _btn ? _btn.innerHTML : '';
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-    showToast('✓ 保存しました！全ページに反映されます');
-    setTimeout(() => alert('💾 保存完了！\n「サイトを確認する」を押してHPを確認してください。'), 300);
+    saveData(d);
   } catch(e) {
     if (e.name === 'QuotaExceededError') {
       showToast('⚠ 容量不足です。不要な画像を削除してください。');
     } else {
       showToast('保存に失敗しました');
     }
+    return;
   }
+  if (_btn) { _btn.textContent = '📡 クラウドに保存中...'; _btn.disabled = true; }
+  saveAllToGAS().then(function() {
+    showToast('✓ 保存しました！全ページに反映されます');
+    setTimeout(function() { alert('💾 保存完了！\n「サイトを確認する」を押してHPを確認してください。'); }, 300);
+    if (_btn) {
+      _btn.textContent = '✓ 保存しました！';
+      setTimeout(function() { _btn.disabled = false; _btn.innerHTML = _btnHTML; }, 2200);
+    }
+  });
 });
 
 /* ── すべての const/var 宣言が完了してから自動ログイン判定 ── */

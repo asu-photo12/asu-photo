@@ -12,6 +12,34 @@
 
   <script src="common.js"></script>
   <script>applyFonts(); applyColors();</script>
+
+  <!-- ★ Firebase Realtime Database SDK ★
+       admin.htmlに入力したものと同じfirebaseConfigの値を使用 -->
+  <script type="module">
+    import { initializeApp }                    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, set, onValue }   from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+    const firebaseConfig = {
+      apiKey:            'YOUR_API_KEY',
+      authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
+      databaseURL:       'https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com',
+      projectId:         'YOUR_PROJECT_ID',
+      storageBucket:     'YOUR_PROJECT_ID.appspot.com',
+      messagingSenderId: 'YOUR_SENDER_ID',
+      appId:             'YOUR_APP_ID'
+    };
+    try {
+      const app = initializeApp(firebaseConfig);
+      const db  = getDatabase(app);
+      window._firebaseDb      = db;
+      window._firebaseRef     = ref;
+      window._firebaseSet     = set;
+      window._firebaseOnValue = onValue;
+    } catch(e) {
+      console.warn('[Firebase] 初期化失敗（localStorageのみで動作）:', e.message);
+    }
+    window._firebaseIsReady = !!window._firebaseDb;
+    if (typeof window._onFirebaseReady === 'function') window._onFirebaseReady();
+  </script>
 </head>
 <body>
 
@@ -129,6 +157,13 @@
 <div id="fc"></div>
 
 <script>
+/* ── Firebase経由でデータを同期してからページを初期化 ── */
+var _initDone = false;
+
+function initPage() {
+  if (_initDone) return;
+  _initDone = true;
+
 document.getElementById('hd').innerHTML = renderHeader();
 document.getElementById('ft').innerHTML = renderFooter();
 document.getElementById('fc').innerHTML = renderFixedCta();
@@ -358,6 +393,35 @@ faqs.forEach(f => {
   if (s.gallery2) applyToImg('#gpImg2', s.gallery2);
   if (s.gallery3) applyToImg('#gpImg3', s.gallery3);
   if (s.gallery4) applyToImg('#gpImg4', s.gallery4);
+})();
+
+} /* initPage() end */
+
+/* ── GASからデータ取得してページ初期化（失敗時はlocalStorageで起動） ── */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udSX6hRW9SFSxfoZC0_tzHK04i0k9XySxaGcN22wm_LN1c_/exec';
+
+async function loadFromGAS() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res  = await fetch(GAS_URL, { signal: controller.signal });
+    clearTimeout(timeout);
+    const data = await res.json();
+    if (data && typeof data === 'object') {
+      Object.keys(data).forEach(key => {
+        const val = typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
+        localStorage.setItem(key, val);
+      });
+      console.log('[GAS] データ取得完了');
+    }
+  } catch(e) {
+    console.log('[GAS] 取得失敗、localStorageを使用:', e.message);
+  }
+}
+
+(async function() {
+  await loadFromGAS();
+  initPage();
 })();
 </script>
 </body>
