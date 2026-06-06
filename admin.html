@@ -438,19 +438,16 @@ async function saveToGAS(data) {
 }
 
 async function saveAllToGAS() {
-  var raw = localStorage.getItem(STORAGE_KEY);
-  var allData = raw ? JSON.parse(raw) : {};
+  const raw = localStorage.getItem(STORAGE_KEY);
+  const allData = raw ? JSON.parse(raw) : {};
 
-  /* 画像データもそのまま送信（GAS側でDriveに保存してURLに変換する） */
-  var gasData = {};
-  Object.keys(allData).forEach(function(key) {
-    gasData[key] = allData[key];
-  });
+  /* 画像データもそのまま含める（GASがDriveに保存してURLに変換する） */
+  const gasData = JSON.parse(JSON.stringify(allData));
 
   /* fadeSettings・imageSettings も追加 */
-  var fade = localStorage.getItem('fadeSettings');
+  const fade = localStorage.getItem('fadeSettings');
   if (fade) { try { gasData.fadeSettings = JSON.parse(fade); } catch(e) {} }
-  var imgSet = localStorage.getItem('imageSettings');
+  const imgSet = localStorage.getItem('imageSettings');
   if (imgSet) { try { gasData.imageSettings = JSON.parse(imgSet); } catch(e) {} }
 
   await saveToGAS(gasData);
@@ -518,6 +515,24 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 /* ── Image upload helper ── */
+
+/* onchange="handleImgUpload(event,'key','previewId')" で使用 */
+function handleImgUpload(event, key, previewId) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    const prev = document.getElementById(previewId);
+    if (prev) { prev.src = base64; prev.style.display = 'block'; }
+    const d = getData();
+    if (!d.images) d.images = {};
+    d.images[key] = base64;
+    saveData(d);
+  };
+  reader.readAsDataURL(file);
+}
+
 function bindImgUpload(inputId, previewId, storageKey) {
   const input = document.getElementById(inputId);
   if (!input) return;
