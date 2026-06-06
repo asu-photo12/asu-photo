@@ -377,14 +377,49 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udS
   ★ GASスクリプトを以下に更新して再デプロイしてください：
 
   const SHEET_ID = '1FJHptEz8vNzg9H0bV-AsOcvTIpuRE-J59NrJXLHZz1U';
+  const FOLDER_NAME = 'asu-photo-images';
+
+  function getOrCreateFolder() {
+    const folders = DriveApp.getFoldersByName(FOLDER_NAME);
+    if (folders.hasNext()) return folders.next();
+    return DriveApp.createFolder(FOLDER_NAME);
+  }
 
   function doPost(e) {
     try {
       const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('data');
-      let body = '';
-      if (e.postData) { body = e.postData.contents; }
-      if (e.parameter && e.parameter.data) { body = e.parameter.data; }
-      sheet.getRange('A1').setValue(body);
+      let body = '{}';
+      if (e.parameter && e.parameter.data) {
+        body = e.parameter.data;
+      } else if (e.postData) {
+        body = e.postData.contents;
+      }
+      const parsed = JSON.parse(body);
+
+      // 画像Base64をDriveに保存してURLに変換
+      if (parsed.images) {
+        const folder = getOrCreateFolder();
+        Object.keys(parsed.images).forEach(key => {
+          const val = parsed.images[key];
+          if (val && val.startsWith('data:image')) {
+            try {
+              const mime = val.split(';')[0].split(':')[1];
+              const b64  = val.split(',')[1];
+              const blob = Utilities.newBlob(
+                Utilities.base64Decode(b64), mime, key + '.jpg');
+              const files = folder.getFilesByName(key + '.jpg');
+              while (files.hasNext()) { files.next().setTrashed(true); }
+              const file = folder.createFile(blob);
+              file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,
+                              DriveApp.Permission.VIEW);
+              parsed.images[key] =
+                'https://drive.google.com/uc?export=view&id=' + file.getId();
+            } catch(imgErr) { console.log('画像保存エラー:', imgErr); }
+          }
+        });
+      }
+
+      sheet.getRange('A1').setValue(JSON.stringify(parsed));
       return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
         .setMimeType(ContentService.MimeType.JSON);
     } catch(err) {
@@ -396,8 +431,8 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udS
   function doGet(e) {
     try {
       const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('data');
-      const val = sheet.getRange('A1').getValue();
-      const cb  = e.parameter.callback;
+      const val  = sheet.getRange('A1').getValue();
+      const cb   = e.parameter.callback;
       const json = val || '{}';
       if (cb) {
         return ContentService.createTextOutput(cb + '(' + json + ')')
