@@ -378,19 +378,38 @@ async function loadFromGAS() {
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 5000);
     const res  = await fetch(GAS_URL, { signal: controller.signal });
-    const data = await res.json();
-    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-      Object.keys(data).forEach(key => {
-        /* 画像データはlocalStorageのものを維持 */
-        const existing = localStorage.getItem(key);
-        if (existing && existing.startsWith('data:image')) return;
-        const val = typeof data[key] === 'object'
-          ? JSON.stringify(data[key])
-          : String(data[key]);
-        localStorage.setItem(key, val);
-      });
-      console.log('[GAS] データ取得完了');
-    }
+    const text = await res.text();
+    if (!text || text === '{}') return;
+
+    const data = JSON.parse(text);
+    if (!data || typeof data !== 'object') return;
+    if (Object.keys(data).length === 0) return;
+
+    /* GASのデータをSTORAGE_KEY（asuphoto_data）にマージして保存 */
+    let local = {};
+    try {
+      local = JSON.parse(localStorage.getItem('asuphoto_data')) || {};
+    } catch(e) { local = {}; }
+
+    /* GASのデータをローカルにマージ（画像データはローカルを優先） */
+    Object.keys(data).forEach(key => {
+      if (key === 'images') {
+        /* 画像はローカルのものを維持しつつGASにあってローカルにないものだけ追加 */
+        const gasImgs  = data[key] || {};
+        const localImgs = local.images || {};
+        local.images = Object.assign({}, gasImgs, localImgs);
+      } else if (key === 'fadeSettings' || key === 'imageSettings') {
+        /* fadeSettings・imageSettingsは独立したキーにも保存 */
+        localStorage.setItem(key, JSON.stringify(data[key]));
+        local[key] = data[key];
+      } else {
+        local[key] = data[key];
+      }
+    });
+
+    localStorage.setItem('asuphoto_data', JSON.stringify(local));
+    console.log('[GAS] データ取得・マージ完了');
+
   } catch(e) {
     console.log('[GAS] 取得失敗:', e.message);
   }
