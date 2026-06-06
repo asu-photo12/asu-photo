@@ -51,8 +51,8 @@
   <section id="hero">
     <div class="hero-slider" id="heroSlider"></div>
     <div class="hero-text-wrap">
-      <p class="hero-catch catch-copy" id="heroCatch">特別な日だけじゃない<br>いつもの幸せを</p>
-      <p class="hero-sub sub-copy" id="heroSub">笑顔も、泣き顔も<br>未来で愛おしくなる瞬間を写します</p>
+      <p class="hero-catch catch-copy" id="heroCatch"><span class="hero-line">特別な日だけじゃない</span><span class="hero-line">いつもの幸せを</span></p>
+      <p class="hero-sub sub-copy" id="heroSub"><span class="hero-line">笑顔も、泣き顔も</span><span class="hero-line">未来で愛おしくなる瞬間を写します</span></p>
     </div>
   </section>
 
@@ -192,8 +192,8 @@ const d = getData();
 const lineUrl = d.lineUrl || LINE_URL_DEFAULT;
 document.getElementById('lineBtn').href = lineUrl;
 
-if (d.catchcopy) document.getElementById('heroCatch').textContent = d.catchcopy;
-if (d.subcopy)   document.getElementById('heroSub').textContent   = d.subcopy;
+if (d.catchcopy) document.getElementById('heroCatch').innerHTML = '<span class="hero-line">' + d.catchcopy + '</span>';
+if (d.subcopy)   document.getElementById('heroSub').innerHTML   = '<span class="hero-line">' + d.subcopy   + '</span>';
 
 document.getElementById('profileImg').src = getImage('profile', PH.profile);
 if (d.profile) document.getElementById('profileDesc').textContent = d.profile;
