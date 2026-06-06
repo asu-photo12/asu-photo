@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>
+/* ===== 管理画面からの設定をHP全ページに即時反映 ===== */
+(function() {
+  var r = document.documentElement;
+
+  /* 1. カラーテーマ（siteColors キー） */
+  try {
+    var c = JSON.parse(localStorage.getItem('siteColors') || '{}');
+    if (c.bgColor)     r.style.setProperty('--bg',          c.bgColor);
+    if (c.surface)     r.style.setProperty('--surface',     c.surface);
+    if (c.textColor)   r.style.setProperty('--text',        c.textColor);
+    if (c.textLight)   r.style.setProperty('--text-light',  c.textLight);
+    if (c.accentColor) r.style.setProperty('--accent',      c.accentColor);
+    if (c.titleColor)  r.style.setProperty('--title-color', c.titleColor);
+    if (c.headerBg) {
+      var h = c.headerBg.replace('#','');
+      r.style.setProperty('--header-bg-rgba',
+        'rgba('+parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16)+',0.92)');
+    }
+  } catch(e) {}
+
+  /* 2. カラーテーマ（旧キー asuphoto_data も読む） */
+  try {
+    var d = JSON.parse(localStorage.getItem('asuphoto_data') || '{}');
+    var c2 = d.colors || {};
+    if (c2.bg)        r.style.setProperty('--bg',          c2.bg);
+    if (c2.surface)   r.style.setProperty('--surface',     c2.surface);
+    if (c2.text)      r.style.setProperty('--text',        c2.text);
+    if (c2.textLight) r.style.setProperty('--text-light',  c2.textLight);
+    if (c2.accent)    r.style.setProperty('--accent',      c2.accent);
+    if (c2.titleColor)r.style.setProperty('--title-color', c2.titleColor);
+    if (c2.headerBg)  {
+      var h2 = c2.headerBg.replace('#','');
+      r.style.setProperty('--header-bg-rgba',
+        'rgba('+parseInt(h2.slice(0,2),16)+','+parseInt(h2.slice(2,4),16)+','+parseInt(h2.slice(4,6),16)+',0.92)');
+    }
+  } catch(e) {}
+
+  /* 3. フォント（siteFonts キー） */
+  try {
+    var f = JSON.parse(localStorage.getItem('siteFonts') || '{}');
+    if (f.bodyFont)  r.style.setProperty('--font-body',    f.bodyFont);
+    if (f.titleFont) r.style.setProperty('--font-display', f.titleFont);
+    if (f.catchFont) r.style.setProperty('--font-catch',   f.catchFont);
+  } catch(e) {}
+
+  /* 4. フォント（旧キー asuphoto_data も読む） */
+  try {
+    var d2 = JSON.parse(localStorage.getItem('asuphoto_data') || '{}');
+    var fo = d2.fonts || {};
+    if (fo.body)    r.style.setProperty('--font-body',    fo.body);
+    if (fo.display) r.style.setProperty('--font-display', fo.display);
+    if (fo.catch)   r.style.setProperty('--font-catch',   fo.catch);
+  } catch(e) {}
+
+  /* 5. テキスト・コンテンツ（DOMContentLoaded後） */
+  try {
+    var ct  = JSON.parse(localStorage.getItem('siteContent')  || '{}');
+    var d3  = JSON.parse(localStorage.getItem('asuphoto_data') || '{}');
+    document.addEventListener('DOMContentLoaded', function() {
+      var catchCopy   = ct.catchCopy   || d3.catchcopy || '';
+      var subCopy     = ct.subCopy     || d3.subcopy   || '';
+      var profileText = ct.profileText || d3.profile   || '';
+      var lineUrl     = ct.lineUrl     || d3.lineUrl   || '';
+
+      if (catchCopy) {
+        var el = document.getElementById('heroCatch') || document.querySelector('.catch-copy');
+        if (el) el.textContent = catchCopy;
+      }
+      if (subCopy) {
+        var el2 = document.getElementById('heroSub') || document.querySelector('.sub-copy');
+        if (el2) el2.textContent = subCopy;
+      }
+      if (profileText) {
+        var el3 = document.getElementById('profileDesc') || document.querySelector('.profile-text');
+        if (el3) el3.textContent = profileText;
+      }
+      if (lineUrl) {
+        ['#lineBtn', '.line-btn', '.btn-line', '.fixed-cta a'].forEach(function(sel) {
+          document.querySelectorAll(sel).forEach(function(el4) { el4.href = lineUrl; });
+        });
+      }
+    });
+  } catch(e) {}
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ナチュラルニューボーン | Asu Photo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="common.js"></script>
+  <script>applyFonts(); applyColors();</script>
+</head>
+<body>
+
+<div id="hd"></div>
+
+<main>
+  <section class="price-top">
+    <div class="price-section">
+      <div class="section-title">
+        <span class="en-title">Natural Newborn</span>
+        <span class="ja-sub">ナチュラルニューボーン</span>
+      </div>
+
+      <img id="planImg" class="price-hero-img"
+           src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=533&fit=crop&q=80"
+           alt="ナチュラルニューボーン">
+
+      <p class="price-intro" id="planIntro">
+        生まれたての赤ちゃんの柔らかな表情や小さな手足を、自然光でやわらかく記録します。<br>
+        お家やスタジオで、ご家族の温かな時間を大切に残します。
+      </p>
+
+      <div class="price-plans" id="pricePlans"></div>
+
+      <div style="text-align:center; margin-top: 16px;">
+        <a href="index.html#plan" class="back-link">← Planに戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="price-cta">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(26px,5vw,38px);font-weight:400;margin-bottom:12px;letter-spacing:2px;">ご予約はLINEから</h2>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:28px;line-height:1.9;">日程・場所・ご要望などお気軽にご相談ください</p>
+    <a href="#" class="btn-line" id="lineBtn" target="_blank" rel="noopener">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINEで予約する
+    </a>
+    <br>
+    <a href="index.html#plan" class="back-link">← Planに戻る</a>
+  </section>
+</main>
+
+<div id="ft"></div>
+<div id="fc"></div>
+
+<script>
+document.getElementById('hd').innerHTML = renderHeader();
+document.getElementById('ft').innerHTML = renderFooter();
+document.getElementById('fc').innerHTML = renderFixedCta();
+initNav();
+
+const d = getData();
+document.getElementById('lineBtn').href = d.lineUrl || LINE_URL_DEFAULT;
+document.getElementById('planImg').src = getImage('plan_newborn',
+  'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=533&fit=crop&q=80');
+
+const defaultPlans = [
+  {
+    en: 'Standard Plan',
+    ja: 'スタンダードプラン',
+    price: '¥30,000',
+    note: '出張費込み・税込',
+    includes: ['撮影時間 約60分', 'データ納品 50枚以上', 'オンラインデータ納品', 'ご自宅または撮影場所へのご出張', '簡易レタッチ込み'],
+  },
+  {
+    en: 'Premium Plan',
+    ja: 'プレミアムプラン',
+    price: '¥45,000',
+    note: '出張費込み・税込',
+    includes: ['撮影時間 約90分', 'データ納品 100枚以上', 'オンラインデータ納品', 'ご自宅または撮影場所へのご出張', '丁寧なレタッチ込み', '家族カット対応'],
+  },
+];
+
+const plans = (d.plans && d.plans['newborn'] && d.plans['newborn'].length) ? d.plans['newborn'] : defaultPlans;
+const container = document.getElementById('pricePlans');
+
+plans.forEach(p => {
+  const includes = Array.isArray(p.includes)
+    ? p.includes.map(i => `<li>${i}</li>`).join('')
+    : `<li>${p.includes}</li>`;
+  container.insertAdjacentHTML('beforeend', `
+    <div class="price-plan-card">
+      <h3>${p.en}</h3>
+      <p class="price-plan-name-ja">${p.ja}</p>
+      <p class="price-amount">${p.price}</p>
+      <p class="price-amount-note">${p.note || ''}</p>
+      <ul class="price-includes">${includes}</ul>
+    </div>`);
+});
+</script>
+</body>
+</html>

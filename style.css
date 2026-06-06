@@ -39,7 +39,7 @@ header {
   top: 0; left: 0; right: 0;
   z-index: 100;
   height: 64px;
-  background: var(--header-bg-rgba, rgba(238,242,245,0.92));
+  background: #ffffff !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -208,14 +208,16 @@ section { padding: 80px 24px; }
 
 /* テキストオーバーレイ（左下） */
 .hero-text-wrap {
-  position: absolute;
+  position: absolute !important;
   z-index: 10;
-  bottom: 8%;
-  left: 3%;
-  text-align: left;
+  top: 120px !important;
+  right: 24px !important;
+  left: auto !important;
+  bottom: auto !important;
+  text-align: right !important;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   max-width: 44%;
   pointer-events: none;
 }
@@ -231,6 +233,7 @@ section { padding: 80px 24px; }
   margin-bottom: 12px;
   word-break: keep-all;
   -webkit-text-size-adjust: 100%;
+  text-align: right !important;
 }
 
 .hero-sub {
@@ -240,6 +243,7 @@ section { padding: 80px 24px; }
   line-height: 1.8;
   text-shadow: none;
   -webkit-text-size-adjust: 100%;
+  text-align: right !important;
 }
 
 /* 左下グラデーション（テキスト可読性確保） */
@@ -254,19 +258,13 @@ section { padding: 80px 24px; }
 
 /* ヘッダー透明化クラス（ヒーロー上のみJS付与） */
 header.header-transparent {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  background: #ffffff !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   box-shadow: none;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
+  border-bottom: none;
 }
-header.header-transparent .logo,
-header.header-transparent .logo-text {
-  color: #fff;
-}
-header.header-transparent .hamburger span {
-  background: #fff;
-}
+/* header-transparent でも白背景になったため、文字・アイコン色は通常状態を継承 */
 
 /* カルーセル（汎用） */
 .carousel-outer {
@@ -297,9 +295,9 @@ header.header-transparent .hamburger span {
 
 .plan-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  max-width: 600px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 900px;
   margin: 0 auto;
 }
 .plan-card {
@@ -315,26 +313,31 @@ header.header-transparent .hamburger span {
 .plan-card:hover { opacity: 0.85; transform: translateY(-2px); }
 .plan-card img {
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  max-height: 160px;
+  display: block;
 }
-.plan-card-body { padding: 14px 16px 18px; }
-.plan-card-ja { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.plan-card-body { padding: 14px 16px 18px; text-align: center; }
+.plan-card-ja { font-size: 15px; font-weight: 500; margin-bottom: 2px; text-align: center; }
 .plan-card-en {
   font-family: var(--font-display);
   font-style: italic;
   font-size: 13px;
   color: var(--text-light);
   letter-spacing: 1px;
+  text-align: center;
 }
 
 /* ===== GALLERY PREVIEW ===== */
-#gallery-preview { background: var(--bg); }
+#gallery-preview {
+  background: var(--bg);
+  padding-bottom: 80px !important;
+  margin-bottom: 0 !important;
+}
 
 .gallery-preview-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   max-width: 900px;
   margin: 0 auto;
@@ -365,8 +368,8 @@ header.header-transparent .hamburger span {
 
 /* ===== PROFILE ===== */
 #profile {
-  background: var(--surface);
-  padding: 0;          /* セクション padding はコンテナで制御 */
+  background-color: #ffffff !important;
+  padding: 40px 16px !important;
   overflow: hidden;
 }
 
@@ -474,7 +477,12 @@ header.header-transparent .hamburger span {
 }
 
 /* ===== REVIEWS ===== */
-#reviews { background: var(--bg); }
+#reviews {
+  background-color: #f5f5f5 !important;
+  padding-top: 80px !important;
+  padding-bottom: 80px !important;
+  margin-top: 0 !important;
+}
 
 .reviews-grid {
   display: grid;
@@ -540,6 +548,22 @@ header.header-transparent .hamburger span {
 #line-cta { background: var(--bg); text-align: center; }
 
 .line-cta-inner { max-width: 520px; margin: 0 auto; }
+
+/* ===== セクション間余白（均一） ===== */
+#hero,
+#profile,
+#plan,
+#gallery-preview,
+#reviews,
+#faq,
+#line-cta {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+#hero {
+  margin-top: 0;
+}
 .line-cta-inner h2 {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
@@ -1192,8 +1216,29 @@ input[type="file"] { display: none !important; }
 @media (max-width: 768px) {
   /* プロフィール：スマホ（横並び・白背景） */
   #profile {
-    background: #ffffff;
-    padding: 40px 20px;
+    background-color: #ffffff !important;
+    padding: 40px 20px !important;
+  }
+
+  #profile .profile-inner {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+  }
+
+  #profile .profile-photo-wrap {
+    flex: 0 0 28% !important;
+    width: 28% !important;
+  }
+
+  #profile .profile-text {
+    flex: 1 !important;
+    background: transparent !important;
+  }
+
+  #profile .profile-photo-shadow {
+    background: #e0e0e0 !important;
   }
 
   .profile-inner {
@@ -1287,38 +1332,54 @@ input[type="file"] { display: none !important; }
 
   /* ヒーロー：スマホ（opacity自動切替） */
   .hero-slider {
-    display: block;
+    display: block !important;
+    flex-direction: column !important;
     position: relative;
-    height: 85vh;
+    width: 100% !important;
+    height: 85vh !important;
+    min-height: 400px !important;
     overflow: hidden;
   }
   .hero-slide {
-    position: absolute;
+    position: absolute !important;
     top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    flex: none;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 400px;
+    flex: none !important;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
+    background: #c8cfd6; /* 画像読み込み失敗時のフォールバック */
   }
   .hero-slide.active {
     opacity: 1;
+  }
+  .hero-slide img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
   /* スマホ：ヒーローテキスト配置 */
   #hero::after {
     background: linear-gradient(to top, rgba(0,0,0,0.48) 0%, transparent 55%);
   }
   .hero-text-wrap {
-    bottom: 8%;
-    left: 5%;
+    top: 100px !important;
+    right: 16px !important;
+    left: auto !important;
+    bottom: auto !important;
     max-width: 88%;
-    text-align: left;
+    text-align: right !important;
+    align-items: flex-end;
   }
   .hero-catch {
     font-size: 1.5rem;
+    text-align: right !important;
   }
   .hero-sub {
     font-size: 0.85rem;
+    text-align: right !important;
   }
 
   /* ギャラリープレビュー：スマホは2列 */
@@ -1326,13 +1387,81 @@ input[type="file"] { display: none !important; }
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
+
+  /* Planセクション：スマホ2列×2行 */
+  #plan .plan-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, auto) !important;
+    gap: 16px !important;
+    max-width: 100% !important;
+    padding: 0 16px !important;
+    margin: 0 auto !important;
+  }
+
+  #plan .plan-card {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  #plan .plan-card img {
+    width: 100% !important;
+    aspect-ratio: 4 / 3 !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  #plan .plan-card-body {
+    text-align: center !important;
+    padding: 8px 4px !important;
+  }
+
+  #plan .plan-card-ja {
+    text-align: center !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    margin: 8px 0 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #plan .plan-card-en {
+    text-align: center !important;
+    font-size: 12px !important;
+    margin: 0 !important;
+  }
+
+  #gallery-preview {
+    padding-bottom: 60px !important;
+  }
+
+  #reviews {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+  }
+
+  #hero,
+  #profile,
+  #plan,
+  #gallery-preview,
+  #reviews,
+  #faq,
+  #line-cta {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  #hero {
+    margin-top: 0;
+  }
 }
 
 @media (max-width: 640px) {
   section { padding: 60px 20px; }
 
 
-  .plan-grid { grid-template-columns: repeat(3, 1fr); max-width: 100%; gap: 10px; }
+  .plan-grid { grid-template-columns: repeat(2, 1fr); max-width: 100%; gap: 12px; }
 
   .lb-prev { left: 8px; }
   .lb-next { right: 8px; }
@@ -1342,7 +1471,7 @@ input[type="file"] { display: none !important; }
 }
 
 @media (min-width: 900px) {
-  .plan-grid { grid-template-columns: repeat(3, 1fr); max-width: 600px; }
+  .plan-grid { grid-template-columns: repeat(2, 1fr); max-width: 900px; }
 }
 
 /* ===== カラーテーマ管理UI ===== */
