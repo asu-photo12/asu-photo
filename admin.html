@@ -30,6 +30,7 @@
   <h1>Asu Photo — 管理画面</h1>
   <button class="sidebar-toggle" id="sidebarToggle">☰ メニュー</button>
   <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+    <button type="button" onclick="testGASConnection()" class="btn-preview-site">📡 GAS接続テスト</button>
     <button type="button" onclick="window.open('./index.html','_blank')" class="btn-preview-site">👁 サイトを確認する</button>
     <button class="btn-logout" id="logoutBtn">ログアウト</button>
   </div>
@@ -440,39 +441,46 @@ async function saveAllToGAS() {
   var raw = localStorage.getItem(STORAGE_KEY);
   var allData = raw ? JSON.parse(raw) : {};
 
-  /* 画像データ（Base64）を除外してGASに送信 */
+  /* 画像データもそのまま送信（GAS側でDriveに保存してURLに変換する） */
   var gasData = {};
   Object.keys(allData).forEach(function(key) {
-    var val = allData[key];
-    if (typeof val === 'string' && val.startsWith('data:image')) return;
-    if (typeof val === 'object' && val !== null) {
-      var filtered = {};
-      Object.keys(val).forEach(function(k) {
-        if (typeof val[k] !== 'string' || !val[k].startsWith('data:image')) {
-          filtered[k] = val[k];
-        }
-      });
-      gasData[key] = filtered;
-    } else {
-      gasData[key] = val;
-    }
+    gasData[key] = allData[key];
   });
 
-  /* fadeSettings・imageSettings を追加 */
+  /* fadeSettings・imageSettings も追加 */
   var fade = localStorage.getItem('fadeSettings');
   if (fade) { try { gasData.fadeSettings = JSON.parse(fade); } catch(e) {} }
   var imgSet = localStorage.getItem('imageSettings');
   if (imgSet) { try { gasData.imageSettings = JSON.parse(imgSet); } catch(e) {} }
 
-  /* テキスト系キーも念のため追加 */
-  var textKeys = ['catchcopy', 'subcopy', 'profileName', 'profileNameEn',
-    'profileTitle', 'profileText', 'colorTheme', 'fontTheme', 'lineUrl', 'instagramUrl'];
-  textKeys.forEach(function(k) {
-    var v = localStorage.getItem(k);
-    if (v) gasData[k] = v;
-  });
-
   await saveToGAS(gasData);
+}
+
+/* ── GAS接続テスト（JSONPで確認） ── */
+function testGASConnection() {
+  showToast('🔍 GAS接続テスト中...');
+  var cb = '_gasTest_' + Date.now();
+  var timeout = setTimeout(function() {
+    delete window[cb];
+    showToast('⚠️ GASタイムアウト - GASを再デプロイしてください');
+  }, 10000);
+  window[cb] = function(data) {
+    clearTimeout(timeout);
+    delete window[cb];
+    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+      showToast('✅ GAS接続OK（' + Object.keys(data).length + 'キー取得）');
+    } else {
+      showToast('⚠️ GAS接続OK - データなし（一度保存してください）');
+    }
+  };
+  var script = document.createElement('script');
+  script.src = GAS_URL + '?callback=' + cb + '&t=' + Date.now();
+  script.onerror = function() {
+    clearTimeout(timeout);
+    delete window[cb];
+    showToast('❌ GAS接続エラー - URLとデプロイを確認してください');
+  };
+  document.head.appendChild(script);
 }
 
 /* ── Auth ── */

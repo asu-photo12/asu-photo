@@ -412,50 +412,55 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udS
   }
 */
 
-/* JSONP方式でGASからデータ取得 */
-function loadFromGAS() {
-  return new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      console.log('[GAS] タイムアウト');
-      resolve();
-    }, 8000);
+/* GASデータをlocalStorageに適用する共通処理 */
+function applyGASData(data) {
+  if (!data || typeof data !== 'object' || Object.keys(data).length === 0) return false;
+  let local = {};
+  try { local = JSON.parse(localStorage.getItem('asuphoto_data')) || {}; } catch(e) { local = {}; }
+  const localImages = local.images || {};
+  Object.assign(local, data);
+  if (Object.keys(localImages).length > 0) {
+    local.images = Object.assign({}, data.images || {}, localImages);
+  }
+  if (data.fadeSettings)  localStorage.setItem('fadeSettings',  JSON.stringify(data.fadeSettings));
+  if (data.imageSettings) localStorage.setItem('imageSettings', JSON.stringify(data.imageSettings));
+  localStorage.setItem('asuphoto_data', JSON.stringify(local));
+  return true;
+}
 
+/* GASからデータ取得：fetch優先 → JSONP fallback */
+async function loadFromGAS() {
+  /* ① fetchで試みる（GASはGETにCORSヘッダーを付与する） */
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+    const res  = await fetch(GAS_URL + '?t=' + Date.now(),
+      { signal: controller.signal, cache: 'no-store' });
+    clearTimeout(timer);
+    const text = await res.text();
+    if (text && text !== '{}') {
+      const data = JSON.parse(text);
+      if (applyGASData(data)) {
+        console.log('[GAS] fetch取得完了');
+        return;
+      }
+    }
+  } catch(e) {
+    console.log('[GAS] fetch失敗、JSONPにフォールバック:', e.message);
+  }
+
+  /* ② JSONPで再試行 */
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => { console.log('[GAS] JSONPタイムアウト'); resolve(); }, 8000);
     window._gasCallback = function(data) {
       clearTimeout(timeout);
-      try {
-        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-          let local = {};
-          try {
-            local = JSON.parse(localStorage.getItem('asuphoto_data')) || {};
-          } catch(e) { local = {}; }
-
-          const localImages = local.images || {};
-          Object.assign(local, data);
-          if (Object.keys(localImages).length > 0) {
-            local.images = Object.assign({}, data.images || {}, localImages);
-          }
-          if (data.fadeSettings) {
-            localStorage.setItem('fadeSettings', JSON.stringify(data.fadeSettings));
-          }
-          if (data.imageSettings) {
-            localStorage.setItem('imageSettings', JSON.stringify(data.imageSettings));
-          }
-          localStorage.setItem('asuphoto_data', JSON.stringify(local));
-          console.log('[GAS] JSONP取得完了');
-        }
-      } catch(e) {
-        console.log('[GAS] 処理エラー:', e);
-      }
+      try { if (applyGASData(data)) console.log('[GAS] JSONP取得完了'); }
+      catch(e) { console.log('[GAS] 処理エラー:', e); }
       resolve();
     };
-
     const script = document.createElement('script');
     script.src = GAS_URL + '?callback=_gasCallback&t=' + Date.now();
-    script.onerror = () => {
-      clearTimeout(timeout);
-      console.log('[GAS] 読み込みエラー');
-      resolve();
-    };
+    script.onerror = () => { clearTimeout(timeout); console.log('[GAS] 読み込みエラー'); resolve(); };
     document.head.appendChild(script);
   });
 }
