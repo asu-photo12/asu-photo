@@ -474,10 +474,42 @@ async function saveToGAS(data) {
 }
 
 async function saveAllToGAS() {
-  var allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  allData.imageSettings = JSON.parse(localStorage.getItem('imageSettings') || '{}');
-  allData.fadeSettings  = JSON.parse(localStorage.getItem('fadeSettings')  || '{}');
-  await saveToGAS(allData);
+  var raw = localStorage.getItem(STORAGE_KEY);
+  var allData = raw ? JSON.parse(raw) : {};
+
+  /* 画像データ（Base64）を除外してGASに送信 */
+  var gasData = {};
+  Object.keys(allData).forEach(function(key) {
+    var val = allData[key];
+    if (typeof val === 'string' && val.startsWith('data:image')) return;
+    if (typeof val === 'object' && val !== null) {
+      var filtered = {};
+      Object.keys(val).forEach(function(k) {
+        if (typeof val[k] !== 'string' || !val[k].startsWith('data:image')) {
+          filtered[k] = val[k];
+        }
+      });
+      gasData[key] = filtered;
+    } else {
+      gasData[key] = val;
+    }
+  });
+
+  /* fadeSettings・imageSettings を追加 */
+  var fade = localStorage.getItem('fadeSettings');
+  if (fade) { try { gasData.fadeSettings = JSON.parse(fade); } catch(e) {} }
+  var imgSet = localStorage.getItem('imageSettings');
+  if (imgSet) { try { gasData.imageSettings = JSON.parse(imgSet); } catch(e) {} }
+
+  /* テキスト系キーも念のため追加 */
+  var textKeys = ['catchcopy', 'subcopy', 'profileName', 'profileNameEn',
+    'profileTitle', 'profileText', 'colorTheme', 'fontTheme', 'lineUrl', 'instagramUrl'];
+  textKeys.forEach(function(k) {
+    var v = localStorage.getItem(k);
+    if (v) gasData[k] = v;
+  });
+
+  await saveToGAS(gasData);
 }
 
 /* Firebaseからデータを取得してlocalStorageに同期し、callbackを呼ぶ */
