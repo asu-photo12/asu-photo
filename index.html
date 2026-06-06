@@ -13,33 +13,6 @@
   <script src="common.js"></script>
   <script>applyFonts(); applyColors();</script>
 
-  <!-- ★ Firebase Realtime Database SDK ★
-       admin.htmlに入力したものと同じfirebaseConfigの値を使用 -->
-  <script type="module">
-    import { initializeApp }                    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getDatabase, ref, set, onValue }   from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-    const firebaseConfig = {
-      apiKey:            'YOUR_API_KEY',
-      authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
-      databaseURL:       'https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com',
-      projectId:         'YOUR_PROJECT_ID',
-      storageBucket:     'YOUR_PROJECT_ID.appspot.com',
-      messagingSenderId: 'YOUR_SENDER_ID',
-      appId:             'YOUR_APP_ID'
-    };
-    try {
-      const app = initializeApp(firebaseConfig);
-      const db  = getDatabase(app);
-      window._firebaseDb      = db;
-      window._firebaseRef     = ref;
-      window._firebaseSet     = set;
-      window._firebaseOnValue = onValue;
-    } catch(e) {
-      console.warn('[Firebase] 初期化失敗（localStorageのみで動作）:', e.message);
-    }
-    window._firebaseIsReady = !!window._firebaseDb;
-    if (typeof window._onFirebaseReady === 'function') window._onFirebaseReady();
-  </script>
 </head>
 <body>
 
@@ -157,7 +130,7 @@
 <div id="fc"></div>
 
 <script>
-/* ── Firebase経由でデータを同期してからページを初期化 ── */
+/* ── GAS経由でデータを同期してからページを初期化 ── */
 var _initDone = false;
 
 function initPage() {

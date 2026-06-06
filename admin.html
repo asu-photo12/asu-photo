@@ -11,33 +11,6 @@
   <script src="common.js"></script>
   <script>applyFonts(); applyColors();</script>
 
-  <!-- ★ Firebase Realtime Database SDK ★
-       Firebaseコンソールで取得した値を下記のYOUR_XXXXに入力してください -->
-  <script type="module">
-    import { initializeApp }                    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getDatabase, ref, set, onValue }   from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-    const firebaseConfig = {
-      apiKey:            'YOUR_API_KEY',
-      authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
-      databaseURL:       'https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com',
-      projectId:         'YOUR_PROJECT_ID',
-      storageBucket:     'YOUR_PROJECT_ID.appspot.com',
-      messagingSenderId: 'YOUR_SENDER_ID',
-      appId:             'YOUR_APP_ID'
-    };
-    try {
-      const app = initializeApp(firebaseConfig);
-      const db  = getDatabase(app);
-      window._firebaseDb      = db;
-      window._firebaseRef     = ref;
-      window._firebaseSet     = set;
-      window._firebaseOnValue = onValue;
-    } catch(e) {
-      console.warn('[Firebase] 初期化失敗（localStorageのみで動作）:', e.message);
-    }
-    window._firebaseIsReady = !!window._firebaseDb;
-    if (typeof window._onFirebaseReady === 'function') window._onFirebaseReady();
-  </script>
 </head>
 <body>
 
@@ -433,27 +406,16 @@
 <script>
 const PASS = 'asuphoto2025';
 
-/* ── Firebase ヘルパー＋保存ラッパー ── */
-function saveToFirebase(key, data) {
-  if (!window._firebaseDb) return;
-  var dbRef = window._firebaseRef(window._firebaseDb, 'siteData/' + key);
-  window._firebaseSet(dbRef, data)
-    .then(function() { console.log('[Firebase] ' + key + ' 保存完了'); })
-    .catch(function(e) { console.error('[Firebase] 保存エラー:', e); });
-}
-
-/* localStorageとFirebaseに同時保存するラッパー */
+/* ── 保存ラッパー ── */
 function saveData(d) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-  saveToFirebase(STORAGE_KEY, d);
+  saveAllToGAS();
 }
 function saveFadeData(settings) {
   localStorage.setItem('fadeSettings', JSON.stringify(settings));
-  saveToFirebase('fadeSettings', settings);
 }
 function saveImageData(settings) {
   localStorage.setItem('imageSettings', JSON.stringify(settings));
-  saveToFirebase('imageSettings', settings);
 }
 
 /* ── GAS（Googleスプレッドシート）連携 ── */
@@ -464,7 +426,7 @@ async function saveToGAS(data) {
     await fetch(GAS_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(data)
     });
     console.log('[GAS] 保存完了');
@@ -512,26 +474,6 @@ async function saveAllToGAS() {
   await saveToGAS(gasData);
 }
 
-/* Firebaseからデータを取得してlocalStorageに同期し、callbackを呼ぶ */
-function syncFromFirebase(callback) {
-  if (!window._firebaseDb) { callback(); return; }
-  var done = false;
-  var timer = setTimeout(function() {
-    if (!done) { done = true; console.warn('[Firebase] 読み込みタイムアウト'); callback(); }
-  }, 5000);
-  var dbRef = window._firebaseRef(window._firebaseDb, 'siteData');
-  window._firebaseOnValue(dbRef, function(snap) {
-    if (done) return; done = true; clearTimeout(timer);
-    var data = snap.val();
-    if (data) {
-      Object.keys(data).forEach(function(k) {
-        localStorage.setItem(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
-      });
-    }
-    callback();
-  }, { onlyOnce: true });
-}
-
 /* ── Auth ── */
 function checkLogin() {
   return sessionStorage.getItem('ap_auth') === '1';
@@ -540,23 +482,8 @@ function showAdmin() {
   document.getElementById('loginWrap').style.display = 'none';
   document.getElementById('adminHeader').style.display = 'flex';
   document.getElementById('adminLayout').style.display = 'flex';
-
-  function doLoad() { loadAll(); initSidebar(); }
-
-  if (window._firebaseIsReady !== undefined) {
-    /* Firebase初期化完了済み（成功か失敗かに関わらず） */
-    syncFromFirebase(doLoad);
-  } else {
-    /* Firebaseモジュール読み込み中 → 完了を待つ（最大3秒） */
-    var fbTimeout = setTimeout(function() {
-      window._onFirebaseReady = null;
-      doLoad();
-    }, 3000);
-    window._onFirebaseReady = function() {
-      clearTimeout(fbTimeout);
-      syncFromFirebase(doLoad);
-    };
-  }
+  loadAll();
+  initSidebar();
 }
 
 /* ログイン済みの場合の showAdmin() 呼び出しはスクリプト末尾へ移動 */
