@@ -423,11 +423,12 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udS
 
 async function saveToGAS(data) {
   try {
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data));
     await fetch(GAS_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      body: JSON.stringify(data)
+      body: formData
     });
     console.log('[GAS] 保存完了');
   } catch(e) {

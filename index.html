@@ -373,46 +373,91 @@ faqs.forEach(f => {
 /* ── GASからデータ取得してページ初期化（失敗時はlocalStorageで起動） ── */
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPeZ6yA_HMLv2Pqo2f1udSX6hRW9SFSxfoZC0_tzHK04i0k9XySxaGcN22wm_LN1c_/exec';
 
-async function loadFromGAS() {
-  try {
-    const controller = new AbortController();
-    setTimeout(() => controller.abort(), 5000);
-    const res  = await fetch(GAS_URL, { signal: controller.signal });
-    const text = await res.text();
-    if (!text || text === '{}') return;
+/*
+  ★ GASスクリプトを以下に更新して再デプロイしてください：
 
-    const data = JSON.parse(text);
-    if (!data || typeof data !== 'object') return;
-    if (Object.keys(data).length === 0) return;
+  const SHEET_ID = '1FJHptEz8vNzg9H0bV-AsOcvTIpuRE-J59NrJXLHZz1U';
 
-    /* GASのデータをSTORAGE_KEY（asuphoto_data）にマージして保存 */
-    let local = {};
+  function doPost(e) {
     try {
-      local = JSON.parse(localStorage.getItem('asuphoto_data')) || {};
-    } catch(e) { local = {}; }
-
-    /* GASのデータをローカルにマージ（画像データはローカルを優先） */
-    Object.keys(data).forEach(key => {
-      if (key === 'images') {
-        /* 画像はローカルのものを維持しつつGASにあってローカルにないものだけ追加 */
-        const gasImgs  = data[key] || {};
-        const localImgs = local.images || {};
-        local.images = Object.assign({}, gasImgs, localImgs);
-      } else if (key === 'fadeSettings' || key === 'imageSettings') {
-        /* fadeSettings・imageSettingsは独立したキーにも保存 */
-        localStorage.setItem(key, JSON.stringify(data[key]));
-        local[key] = data[key];
-      } else {
-        local[key] = data[key];
-      }
-    });
-
-    localStorage.setItem('asuphoto_data', JSON.stringify(local));
-    console.log('[GAS] データ取得・マージ完了');
-
-  } catch(e) {
-    console.log('[GAS] 取得失敗:', e.message);
+      const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('data');
+      let body = '';
+      if (e.postData) { body = e.postData.contents; }
+      if (e.parameter && e.parameter.data) { body = e.parameter.data; }
+      sheet.getRange('A1').setValue(body);
+      return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch(err) {
+      return ContentService.createTextOutput(JSON.stringify({error:err.toString()}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
   }
+
+  function doGet(e) {
+    try {
+      const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('data');
+      const val = sheet.getRange('A1').getValue();
+      const cb  = e.parameter.callback;
+      const json = val || '{}';
+      if (cb) {
+        return ContentService.createTextOutput(cb + '(' + json + ')')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      return ContentService.createTextOutput(json)
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch(err) {
+      return ContentService.createTextOutput('{}')
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+*/
+
+/* JSONP方式でGASからデータ取得 */
+function loadFromGAS() {
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      console.log('[GAS] タイムアウト');
+      resolve();
+    }, 8000);
+
+    window._gasCallback = function(data) {
+      clearTimeout(timeout);
+      try {
+        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+          let local = {};
+          try {
+            local = JSON.parse(localStorage.getItem('asuphoto_data')) || {};
+          } catch(e) { local = {}; }
+
+          const localImages = local.images || {};
+          Object.assign(local, data);
+          if (Object.keys(localImages).length > 0) {
+            local.images = Object.assign({}, data.images || {}, localImages);
+          }
+          if (data.fadeSettings) {
+            localStorage.setItem('fadeSettings', JSON.stringify(data.fadeSettings));
+          }
+          if (data.imageSettings) {
+            localStorage.setItem('imageSettings', JSON.stringify(data.imageSettings));
+          }
+          localStorage.setItem('asuphoto_data', JSON.stringify(local));
+          console.log('[GAS] JSONP取得完了');
+        }
+      } catch(e) {
+        console.log('[GAS] 処理エラー:', e);
+      }
+      resolve();
+    };
+
+    const script = document.createElement('script');
+    script.src = GAS_URL + '?callback=_gasCallback&t=' + Date.now();
+    script.onerror = () => {
+      clearTimeout(timeout);
+      console.log('[GAS] 読み込みエラー');
+      resolve();
+    };
+    document.head.appendChild(script);
+  });
 }
 
 (async function() {
