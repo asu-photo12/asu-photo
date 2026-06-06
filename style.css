@@ -220,16 +220,11 @@ section { padding: 80px 24px; }
   align-items: flex-end;
   max-width: 44%;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0) 100%
-  ) !important;
-  backdrop-filter: blur(2px) !important;
-  -webkit-backdrop-filter: blur(2px) !important;
-  padding: 16px 20px !important;
-  border-radius: 8px !important;
+  background: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
 }
 
 .hero-catch {
@@ -254,6 +249,18 @@ section { padding: 80px 24px; }
   text-shadow: none;
   -webkit-text-size-adjust: 100%;
   text-align: right !important;
+}
+
+/* 各テキスト行の下のみに白いぼかし */
+.hero-line {
+  display: table !important;
+  padding: 2px 8px 2px 0 !important;
+  margin-bottom: 6px !important;
+  background: linear-gradient(
+    to right,
+    rgba(255,255,255,0.45) 0%,
+    rgba(255,255,255,0) 100%
+  ) !important;
 }
 
 /* 左下グラデーション（テキスト可読性確保） */
