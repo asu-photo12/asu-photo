@@ -31,12 +31,10 @@
   <!-- PROFILE -->
   <section id="profile">
     <div class="profile-inner">
-      <!-- 写真（影付き） -->
       <div class="profile-photo-wrap">
         <div class="profile-photo-shadow"></div>
         <img id="profileImg" class="profile-img" src="" alt="プロフィール写真">
       </div>
-      <!-- テキストエリア -->
       <div class="profile-text">
         <p class="profile-label">Profile</p>
         <h2 class="profile-name-en">Asu Photo</h2>
@@ -97,7 +95,6 @@
       <h2>ご予約・お問い合わせ</h2>
       <p>ご不明な点やご要望など、お気軽にLINEからご連絡ください。<br>撮影の流れやプランについてもご相談いただけます。</p>
       <div style="display:flex; gap:20px; justify-content:center; align-items:center; margin-top:24px;">
-        <!-- LINE アイコンボタン -->
         <a href="#" id="lineBtn" target="_blank" rel="noopener noreferrer"
            style="display:inline-flex; align-items:center; justify-content:center;
                   width:56px; height:56px; border-radius:50%;
@@ -107,7 +104,6 @@
             <path d="M12 2C6.48 2 2 6.02 2 11c0 3.07 1.6 5.78 4.07 7.62L5.5 22l4.13-1.37C10.37 20.86 11.17 21 12 21c5.52 0 10-4.02 10-9S17.52 2 12 2z"/>
           </svg>
         </a>
-        <!-- Instagram アイコンボタン -->
         <a href="https://www.instagram.com/ここを差し替え/" target="_blank" rel="noopener noreferrer"
            style="display:inline-flex; align-items:center; justify-content:center;
                   width:56px; height:56px; border-radius:50%;
@@ -146,14 +142,15 @@ const PH = {
     'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=600&h=800&fit=crop&q=80',
     'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=600&h=800&fit=crop&q=80',
   ],
-  planFamily: 'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=400&h=533&fit=crop&q=80',
-  plan753:    'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&h=533&fit=crop&q=80',
-  planOmiya:  'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=400&h=533&fit=crop&q=80',
-  gpImg1:     'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&h=450&fit=crop&q=80',
-  gpImg2:     'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800&h=450&fit=crop&q=80',
-  gpImg3:     'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&h=450&fit=crop&q=80',
-  gpImg4:     'https://images.unsplash.com/photo-1484665761550-b80f81b7c2fa?w=800&h=450&fit=crop&q=80',
-  profile:    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=533&fit=crop&q=80',
+  planFamily:  'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=400&h=533&fit=crop&q=80',
+  plan753:     'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&h=533&fit=crop&q=80',
+  planOmiya:   'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=400&h=533&fit=crop&q=80',
+  planNewborn: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=533&fit=crop&q=80',
+  gpImg1:      'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&h=450&fit=crop&q=80',
+  gpImg2:      'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800&h=450&fit=crop&q=80',
+  gpImg3:      'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&h=450&fit=crop&q=80',
+  gpImg4:      'https://images.unsplash.com/photo-1484665761550-b80f81b7c2fa?w=800&h=450&fit=crop&q=80',
+  profile:     'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=533&fit=crop&q=80',
 };
 
 const d = getData();
@@ -171,11 +168,12 @@ document.getElementById('gpImg2').src = getImage('gallery_idx_2', PH.gpImg2);
 document.getElementById('gpImg3').src = getImage('gallery_idx_3', PH.gpImg3);
 document.getElementById('gpImg4').src = getImage('gallery_idx_4', PH.gpImg4);
 
-/* plan cards */
+/* plan cards — 4プラン（家族写真・七五三・お宮参り・ナチュラルニューボーン） */
 const planDefs = [
-  { key: 'plan_family', ja: '家族写真', en: 'Family',      href: 'price-family.html', ph: PH.planFamily },
-  { key: 'plan_753',    ja: '七五三',   en: 'Shichigosan', href: 'price-753.html',    ph: PH.plan753 },
-  { key: 'plan_omiya',  ja: 'お宮参り', en: 'Omiyamairi',  href: 'price-omiya.html',  ph: PH.planOmiya },
+  { key: 'plan_family',  ja: '家族写真',             en: 'Family',      href: 'price-family.html',  ph: PH.planFamily  },
+  { key: 'plan_753',     ja: '七五三',               en: 'Shichigosan', href: 'price-753.html',     ph: PH.plan753     },
+  { key: 'plan_omiya',   ja: 'お宮参り',             en: 'Omiyamairi',  href: 'price-omiya.html',   ph: PH.planOmiya   },
+  { key: 'plan_newborn', ja: 'ナチュラルニューボーン', en: 'Newborn',     href: 'price-newborn.html', ph: PH.planNewborn },
 ];
 const grid = document.getElementById('planGrid');
 planDefs.forEach(p => {
@@ -226,17 +224,19 @@ faqs.forEach(f => {
   faqList.appendChild(item);
 });
 
-/* hero slider（PC：3枚横並び / スマホ：opacity自動切替） */
+/* hero slider — 4枚対応（PC：横並び / スマホ：opacity自動切替） */
 (function() {
   var PH_SLIDES = [
     'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&h=1200&fit=crop',
     'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800&h=1200&fit=crop',
     'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&h=1200&fit=crop',
+    'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800&h=1200&fit=crop',
   ];
   var imgs = [
     getImage('hero1', PH_SLIDES[0]),
     getImage('hero2', PH_SLIDES[1]),
     getImage('hero3', PH_SLIDES[2]),
+    getImage('hero4', PH_SLIDES[3]),
   ].filter(Boolean);
 
   var slider = document.getElementById('heroSlider');
@@ -298,12 +298,10 @@ faqs.forEach(f => {
   var fadeSettings = {};
   try { fadeSettings = JSON.parse(localStorage.getItem('fadeSettings') || '{}'); } catch(e) {}
 
-  /* fadeSettings が空（未設定）の場合はデフォルトで全ON */
   if (Object.keys(fadeSettings).length === 0) {
     fadeSettings = { hero: true, profile: true, plan: true, gallery: true, voice: true, faq: true, contact: true };
   }
 
-  /* セクションキー → 対象セレクタのマッピング */
   var sectionMap = {
     hero:    '#hero .hero-text-wrap',
     profile: '#profile',
@@ -314,13 +312,13 @@ faqs.forEach(f => {
     contact: '#line-cta',
   };
 
-  if (!('IntersectionObserver' in window)) return; /* 非対応ブラウザはスキップ */
+  if (!('IntersectionObserver' in window)) return;
 
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-        observer.unobserve(entry.target); /* 一度表示したら解除 */
+        observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
@@ -354,6 +352,7 @@ faqs.forEach(f => {
   if (s.hero1)    applyToImg('.hero-slider .hero-slide:nth-child(1) img', s.hero1);
   if (s.hero2)    applyToImg('.hero-slider .hero-slide:nth-child(2) img', s.hero2);
   if (s.hero3)    applyToImg('.hero-slider .hero-slide:nth-child(3) img', s.hero3);
+  if (s.hero4)    applyToImg('.hero-slider .hero-slide:nth-child(4) img', s.hero4);
   if (s.profile)  applyToImg('#profileImg', s.profile);
   if (s.gallery1) applyToImg('#gpImg1', s.gallery1);
   if (s.gallery2) applyToImg('#gpImg2', s.gallery2);

@@ -6,7 +6,6 @@
   <title>管理画面 | Asu Photo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- 管理画面用：全フォント一括読み込み -->
   <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Dela+Gothic+One&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Hina+Mincho&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Kaisei+Decol:wght@400;500;700&family=Klee+One:wght@400;600&family=Kosugi+Maru&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=M+PLUS+1p:wght@400;500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Montserrat:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&family=Reggae+One&family=Sawarabi+Gothic&family=Sawarabi+Mincho&family=Shippori+Mincho:wght@400;500;700&family=Yomogi&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="common.js"></script>
@@ -69,8 +68,6 @@
   <!-- カラーテーマ設定 -->
   <div class="admin-section-card" id="section-color">
     <h2>カラーテーマ設定</h2>
-
-    <!-- プリセット -->
     <div class="form-group">
       <label class="form-label">プリセットテーマ</label>
       <div class="theme-presets" id="themePresets">
@@ -81,8 +78,6 @@
         <button type="button" class="theme-preset-btn" onclick="applyPresetById('sakura',this)">🌸 さくらピンク</button>
       </div>
     </div>
-
-    <!-- カラーピッカー -->
     <div class="color-picker-grid">
       <div class="color-picker-item">
         <label class="form-label">背景色</label>
@@ -134,8 +129,6 @@
         </div>
       </div>
     </div>
-
-    <!-- ライブプレビュー -->
     <div class="color-preview-bar" id="colorPreviewBar">
       <span class="cpb-bg">背景</span>
       <span class="cpb-surface">カード</span>
@@ -149,7 +142,6 @@
   <!-- 書体設定 -->
   <div class="admin-section-card" id="section-font">
     <h2>書体設定</h2>
-
     <div class="form-group">
       <label class="form-label">本文フォント（全体）</label>
       <select class="font-select" id="fontBody" onchange="onFontChange('fontBody','prevBody','--font-body',this.value)">
@@ -166,7 +158,6 @@
       </select>
       <p class="font-preview-text" id="prevBody">あのイーハトーヴォのすきとおった風　家族の笑顔を残す出張カメラマン</p>
     </div>
-
     <div class="form-group">
       <label class="form-label">セクションタイトルフォント（英字）</label>
       <select class="font-select" id="fontDisplay" onchange="onFontChange('fontDisplay','prevDisplay','--font-display',this.value)">
@@ -183,7 +174,6 @@
       </select>
       <p class="font-preview-text" id="prevDisplay" style="font-size:26px;font-style:italic;letter-spacing:2px;">Plan / Gallery / Profile</p>
     </div>
-
     <div class="form-group">
       <label class="form-label">キャッチコピーフォント</label>
       <select class="font-select" id="fontCatch" onchange="onFontChange('fontCatch','prevCatch','--font-catch',this.value)">
@@ -229,13 +219,12 @@
     <div id="planImgGroup"></div>
   </div>
 
-  <!-- ギャラリー -->
+  <!-- ギャラリープレビュー -->
   <div class="admin-section-card" id="section-gallery">
-    <h2>ギャラリープレビュー写真（トップページ用・縦長 2:3）</h2>
+    <h2>ギャラリープレビュー写真（トップページ用・横長 4:3）</h2>
     <div id="galleryIdxGroup"></div>
   </div>
 
-  
   <div class="admin-section-card">
     <h2>ギャラリーページ写真（正方形グリッド）</h2>
     <div class="gallery-upload-grid" id="galleryGrid"></div>
@@ -246,7 +235,7 @@
     </div>
   </div>
 
-  
+  <!-- プロフィール -->
   <div class="admin-section-card" id="section-profile">
     <h2>プロフィール</h2>
     <div class="img-upload-row">
@@ -269,34 +258,39 @@
     <button class="btn-section-save" onclick="saveSection('profile', this)">✓ プロフィールを保存</button>
   </div>
 
-  
+  <!-- 撮影プランと料金 -->
   <div class="admin-section-card" id="section-plans">
     <h2>撮影プランと料金</h2>
 
-    <!-- 家族写真 -->
     <div class="plan-sub-section">
       <h4>家族写真プラン</h4>
       <div id="planFamilyList"></div>
       <button class="btn-add-item" onclick="addPlanItem('family')">＋ プランを追加</button>
     </div>
 
-    <!-- 七五三 -->
     <div class="plan-sub-section">
       <h4>七五三プラン</h4>
       <div id="plan753List"></div>
       <button class="btn-add-item" onclick="addPlanItem('753')">＋ プランを追加</button>
     </div>
 
-    <!-- お宮参り -->
     <div class="plan-sub-section">
       <h4>お宮参りプラン</h4>
       <div id="planOmiyaList"></div>
       <button class="btn-add-item" onclick="addPlanItem('omiya')">＋ プランを追加</button>
     </div>
+
+    <!-- ★追加：ナチュラルニューボーン -->
+    <div class="plan-sub-section">
+      <h4>ナチュラルニューボーンプラン</h4>
+      <div id="planNewbornList"></div>
+      <button class="btn-add-item" onclick="addPlanItem('newborn')">＋ プランを追加</button>
+    </div>
+
     <button class="btn-section-save" onclick="saveSection('plans', this)">✓ 料金プランを保存</button>
   </div>
 
-  
+  <!-- お客様の声 -->
   <div class="admin-section-card" id="section-reviews">
     <h2>お客様の声</h2>
     <div id="reviewList"></div>
@@ -304,7 +298,7 @@
     <button class="btn-section-save" onclick="saveSection('reviews', this)">✓ お客様の声を保存</button>
   </div>
 
-  
+  <!-- FAQ -->
   <div class="admin-section-card" id="section-faq">
     <h2>よくある質問（FAQ）</h2>
     <div id="faqList"></div>
@@ -312,7 +306,7 @@
     <button class="btn-section-save" onclick="saveSection('faq', this)">✓ FAQを保存</button>
   </div>
 
-  
+  <!-- LINE -->
   <div class="admin-section-card" id="section-line">
     <h2>LINE公式アカウントURL</h2>
     <div class="form-group">
@@ -329,7 +323,6 @@
       ONにしたセクションはスクロール時にふわっとフェードインします。<br>
       保存後にサイトを確認してください。
     </p>
-
     <div class="fade-setting-item">
       <span>ヒーロー（キャッチコピー）</span>
       <label class="toggle-switch">
@@ -379,7 +372,6 @@
         <span class="toggle-slider"></span>
       </label>
     </div>
-
     <button class="btn-section-save" onclick="saveFadeSettings(this)">✓ フェード設定を保存</button>
   </div>
 
@@ -425,7 +417,7 @@ function showAdmin() {
   initSidebar();
 }
 
-if (checkLogin()) showAdmin();
+/* ログイン済みの場合の showAdmin() 呼び出しはスクリプト末尾へ移動 */
 
 document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -448,7 +440,7 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 /* ── Image upload helper ── */
-function bindImgUpload(inputId, previewId, storageKey, aspectClass) {
+function bindImgUpload(inputId, previewId, storageKey) {
   const input = document.getElementById(inputId);
   if (!input) return;
   input.addEventListener('change', e => {
@@ -465,7 +457,7 @@ function bindImgUpload(inputId, previewId, storageKey, aspectClass) {
   });
 }
 
-/* ── Build hero image uploads ── */
+/* ── Build hero image uploads — 4枚 ── */
 function buildHeroImgGroup() {
   const wrap = document.getElementById('heroImgGroup');
   const phs = [
@@ -494,13 +486,14 @@ function buildHeroImgGroup() {
   });
 }
 
-/* ── Build plan card image uploads ── */
+/* ── Build plan card image uploads — 4プラン ── */
 function buildPlanImgGroup() {
   const wrap = document.getElementById('planImgGroup');
   const defs = [
-    { key: 'plan_family', label: '家族写真', ph: 'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=200&h=267&fit=crop&q=70' },
-    { key: 'plan_753',    label: '七五三',   ph: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=200&h=267&fit=crop&q=70' },
-    { key: 'plan_omiya',  label: 'お宮参り', ph: 'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=200&h=267&fit=crop&q=70' },
+    { key: 'plan_family',  label: '家族写真',             ph: 'https://images.unsplash.com/photo-1609220136736-443140cfeaa8?w=200&h=267&fit=crop&q=70' },
+    { key: 'plan_753',     label: '七五三',               ph: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=200&h=267&fit=crop&q=70' },
+    { key: 'plan_omiya',   label: 'お宮参り',             ph: 'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=200&h=267&fit=crop&q=70' },
+    { key: 'plan_newborn', label: 'ナチュラルニューボーン', ph: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=200&h=267&fit=crop&q=70' },
   ];
   defs.forEach((p, i) => {
     const inputId = `planFile_${i}`;
@@ -521,12 +514,14 @@ function buildPlanImgGroup() {
   });
 }
 
-/* ── Build gallery index image uploads ── */
+/* ── Build gallery index image uploads — 4枚 ── */
 function buildGalleryIdxGroup() {
   const wrap = document.getElementById('galleryIdxGroup');
   const defs = [
-    { key: 'gallery_idx_1', label: 'プレビュー写真 1', ph: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=300&fit=crop&q=70' },
-    { key: 'gallery_idx_2', label: 'プレビュー写真 2', ph: 'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=200&h=300&fit=crop&q=70' },
+    { key: 'gallery_idx_1', label: 'プレビュー写真 1', ph: 'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=200&h=150&fit=crop&q=70' },
+    { key: 'gallery_idx_2', label: 'プレビュー写真 2', ph: 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=200&h=150&fit=crop&q=70' },
+    { key: 'gallery_idx_3', label: 'プレビュー写真 3', ph: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=200&h=150&fit=crop&q=70' },
+    { key: 'gallery_idx_4', label: 'プレビュー写真 4', ph: 'https://images.unsplash.com/photo-1484665761550-b80f81b7c2fa?w=200&h=150&fit=crop&q=70' },
   ];
   defs.forEach((g, i) => {
     const inputId = `galleryIdxFile_${i}`;
@@ -649,12 +644,16 @@ const planDefaults = {
     { en:'Standard Plan', ja:'スタンダードプラン', price:'¥28,000', note:'出張費込み・税込', includes:['撮影時間 約45分','データ納品 40枚以上','オンラインデータ納品','神社・公園などへのご出張','簡易レタッチ込み'] },
     { en:'Premium Plan',  ja:'プレミアムプラン',  price:'¥42,000', note:'出張費込み・税込', includes:['撮影時間 約75分','データ納品 80枚以上','オンラインデータ納品','神社・公園などへのご出張','丁寧なレタッチ込み','ご家族全員での記念カット対応'] },
   ],
+  newborn: [
+    { en:'Standard Plan', ja:'スタンダードプラン', price:'¥30,000', note:'出張費込み・税込', includes:['撮影時間 約60分','データ納品 50枚以上','オンラインデータ納品','ご自宅または撮影場所へのご出張','簡易レタッチ込み'] },
+    { en:'Premium Plan',  ja:'プレミアムプラン',  price:'¥45,000', note:'出張費込み・税込', includes:['撮影時間 約90分','データ納品 100枚以上','オンラインデータ納品','ご自宅または撮影場所へのご出張','丁寧なレタッチ込み','家族カット対応'] },
+  ],
 };
 
 function renderPlanList(type) {
   const d = getData();
   const items = (d.plans && d.plans[type] && d.plans[type].length) ? d.plans[type] : planDefaults[type];
-  const listId = { family:'planFamilyList', '753':'plan753List', omiya:'planOmiyaList' }[type];
+  const listId = { family:'planFamilyList', '753':'plan753List', omiya:'planOmiyaList', newborn:'planNewbornList' }[type];
   const el = document.getElementById(listId);
   el.innerHTML = items.map((item,i) => planItemHtml(type, i, item)).join('');
 }
@@ -778,16 +777,13 @@ const COLOR_FIELDS = [
   { id: 'colorTitle',     hexId: 'colorTitleHex',     key: 'titleColor', cssVar: '--title-color', previewClass: 'cpb-title',   previewProp: 'background' },
 ];
 
-/* ── プリセットをIDで適用（onclick直呼び出し用・外部変数不使用） ── */
 function applyPresetById(id, btn) {
-  /* THEME_PRESETS は common.js で定義済みのグローバル */
   var preset = null;
   for (var i = 0; i < THEME_PRESETS.length; i++) {
     if (THEME_PRESETS[i].id === id) { preset = THEME_PRESETS[i]; break; }
   }
   if (!preset) return;
 
-  /* key → {pickerInputId, hexInputId, cssVarName} のマッピング（inline） */
   var fields = [
     { key: 'bg',         pid: 'colorBg',        hid: 'colorBgHex',        v: '--bg' },
     { key: 'surface',    pid: 'colorSurface',   hid: 'colorSurfaceHex',   v: '--surface' },
@@ -816,25 +812,17 @@ function applyPresetById(id, btn) {
     }
   }
 
-  /* プレビューバー更新（定義済みなら） */
   if (typeof updatePreviewBar === 'function') updatePreviewBar();
 
-  /* アクティブ強調 */
   var btns = document.querySelectorAll('.theme-preset-btn');
   for (var k = 0; k < btns.length; k++) btns[k].classList.remove('active');
   if (btn) btn.classList.add('active');
-}
-
-/* 後方互換 */
-function applyPreset(preset) {
-  if (preset && preset.id) applyPresetById(preset.id);
 }
 
 function buildThemeSection() {
   const d = getData();
   const saved = d.colors || {};
 
-  /* カラーピッカー初期化 */
   COLOR_FIELDS.forEach(f => {
     const swatch = document.getElementById(f.id);
     const hexInput = document.getElementById(f.hexId);
@@ -858,24 +846,12 @@ function buildThemeSection() {
     });
   });
 
-  /* プレビューバー初期値 */
   updatePreviewBar();
 }
 
 function getDefaultColor(key) {
   const defaults = THEME_PRESETS[0];
   return defaults[key] || '#888888';
-}
-
-function applyPreset(preset) {
-  COLOR_FIELDS.forEach(f => {
-    const val = preset[f.key] || getDefaultColor(f.key);
-    const swatch = document.getElementById(f.id);
-    const hexInput = document.getElementById(f.hexId);
-    if (swatch) swatch.value = val;
-    if (hexInput) hexInput.value = val.toUpperCase();
-    liveApplyColor(f, val);
-  });
 }
 
 function liveApplyColor(f, val) {
@@ -896,14 +872,13 @@ function updatePreviewBar() {
     if (!el) return;
     const val = document.getElementById(f.id)?.value || getDefaultColor(f.key);
     el.style.background = val;
-    // テキスト色の調整（明暗判定）
     const r = parseInt(val.slice(1,3),16), g = parseInt(val.slice(3,5),16), b = parseInt(val.slice(5,7),16);
     const brightness = (r*299 + g*587 + b*114) / 1000;
     el.style.color = brightness > 128 ? '#333' : '#fff';
   });
 }
 
-/* ── Font selects（native select） ── */
+/* ── Font selects ── */
 function onFontChange(selId, prevId, cssVar, val) {
   const sel = document.getElementById(selId);
   const prev = document.getElementById(prevId);
@@ -926,7 +901,6 @@ function buildFontSelects() {
     if (!sel || !sel.options.length) return;
     const saved_val = saved[key] || '';
     sel.value = saved_val;
-    /* 保存値が選択肢に存在しない場合は先頭に戻す */
     if (!sel.value) sel.value = sel.options[0].value;
     onFontChange(id, prevId, cssVar, sel.value);
   });
@@ -950,7 +924,6 @@ function initSidebar() {
   toggle  && toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
   overlay && overlay.addEventListener('click', closeSidebar);
 
-  /* Section scroll */
   document.querySelectorAll('.sidebar-nav-item[data-target]').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = document.getElementById(btn.dataset.target);
@@ -962,7 +935,6 @@ function initSidebar() {
     });
   });
 
-  /* IntersectionObserver for active highlight */
   const sections = document.querySelectorAll('.admin-section-card[id]');
   if ('IntersectionObserver' in window) {
     const obs = new IntersectionObserver(entries => {
@@ -983,41 +955,31 @@ function initSidebar() {
 function loadAll() {
   const d = getData();
 
-  /* text fields */
-  document.getElementById('catchcopy').value = d.catchcopy || '';
-  document.getElementById('subcopy').value   = d.subcopy   || '';
-  document.getElementById('lineUrl').value   = d.lineUrl   || '';
-  document.getElementById('profileText').value = d.profile || '';
+  document.getElementById('catchcopy').value    = d.catchcopy || '';
+  document.getElementById('subcopy').value      = d.subcopy   || '';
+  document.getElementById('lineUrl').value      = d.lineUrl   || '';
+  document.getElementById('profileText').value  = d.profile   || '';
 
-  /* profile image */
   const profImg = getImage('profile', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=267&fit=crop&q=70');
   document.getElementById('profileImgPrev').src = profImg;
 
-  /* image groups */
   buildHeroImgGroup();
   buildPlanImgGroup();
   buildGalleryIdxGroup();
   buildGalleryGrid();
 
-  /* color theme */
   buildThemeSection();
-
-  /* font selects */
   buildFontSelects();
 
-  /* plan lists */
   renderPlanList('family');
   renderPlanList('753');
   renderPlanList('omiya');
+  renderPlanList('newborn');
 
-  /* reviews / faqs */
   renderReviews();
   renderFaqs();
 
-  /* fade settings */
   loadFadeSettings();
-
-  /* image adjust panels */
   buildImgAdjustPanels();
 }
 
@@ -1052,11 +1014,12 @@ function saveFadeSettings(btn) {
   }
 }
 
-/* ── 画像位置・大きさ調整パネル ── */
+/* ── 画像位置・大きさ調整パネル — hero4追加 ── */
 var IMG_ADJUST_DEFS = [
   { key: 'hero1',    label: 'TOPヒーロー 1枚目' },
   { key: 'hero2',    label: 'TOPヒーロー 2枚目' },
   { key: 'hero3',    label: 'TOPヒーロー 3枚目' },
+  { key: 'hero4',    label: 'TOPヒーロー 4枚目' },
   { key: 'profile',  label: 'プロフィール画像' },
   { key: 'gallery1', label: 'ギャラリー 1枚目' },
   { key: 'gallery2', label: 'ギャラリー 2枚目' },
@@ -1103,7 +1066,7 @@ function buildImgAdjustPanels() {
 }
 
 function saveImageSettings(btn) {
-  var keys = ['hero1','hero2','hero3','profile','gallery1','gallery2','gallery3','gallery4'];
+  var keys = ['hero1','hero2','hero3','hero4','profile','gallery1','gallery2','gallery3','gallery4'];
   var settings = {};
   keys.forEach(function(key) {
     var xEl = document.getElementById(key + '-x');
@@ -1122,7 +1085,6 @@ function saveImageSettings(btn) {
   }
 }
 
-/* ── Save ── */
 /* ── セクション個別保存 ── */
 function saveSection(section, btn) {
   const d = getData();
@@ -1151,7 +1113,7 @@ function saveSection(section, btn) {
     d.profile = document.getElementById('profileText').value.trim();
   }
   else if (section === 'plans') {
-    const typeMap = { family: 'planFamilyList', '753': 'plan753List', omiya: 'planOmiyaList' };
+    const typeMap = { family: 'planFamilyList', '753': 'plan753List', omiya: 'planOmiyaList', newborn: 'planNewbornList' };
     if (!d.plans) d.plans = {};
     Object.keys(typeMap).forEach(type => {
       const items = [];
@@ -1188,8 +1150,6 @@ function saveSection(section, btn) {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-
-    /* ボタンを一時的に「保存済み」表示 */
     if (btn) {
       const orig = btn.textContent;
       btn.classList.add('saved');
@@ -1207,7 +1167,6 @@ function saveSection(section, btn) {
 document.getElementById('saveBtn').addEventListener('click', () => {
   const d = getData();
 
-  /* colors */
   d.colors = {};
   COLOR_FIELDS.forEach(f => {
     const val = document.getElementById(f.id)?.value;
@@ -1215,7 +1174,6 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   });
   applyColors();
 
-  /* fonts */
   d.fonts = {
     body:    document.getElementById('fontBody')?.value    || '',
     display: document.getElementById('fontDisplay')?.value || '',
@@ -1223,14 +1181,12 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   };
   applyFonts();
 
-  /* text */
   d.catchcopy = document.getElementById('catchcopy').value.trim();
   d.subcopy   = document.getElementById('subcopy').value.trim();
   d.lineUrl   = document.getElementById('lineUrl').value.trim();
   d.profile   = document.getElementById('profileText').value.trim();
 
-  /* plan items */
-  const typeMap = { family: 'planFamilyList', '753': 'plan753List', omiya: 'planOmiyaList' };
+  const typeMap = { family: 'planFamilyList', '753': 'plan753List', omiya: 'planOmiyaList', newborn: 'planNewbornList' };
   if (!d.plans) d.plans = {};
   Object.keys(typeMap).forEach(type => {
     const items = [];
@@ -1247,7 +1203,6 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     d.plans[type] = items;
   });
 
-  /* reviews */
   const rvs = [];
   document.querySelectorAll('#reviewList .repeater-item').forEach(el => {
     rvs.push({
@@ -1257,7 +1212,6 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   });
   d.reviews = rvs;
 
-  /* faqs */
   const fqs = [];
   document.querySelectorAll('#faqList .repeater-item').forEach(el => {
     fqs.push({
@@ -1269,9 +1223,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-
     showToast('✓ 保存しました！全ページに反映されます');
-    /* 保存完了アラートも念のため */
     setTimeout(() => alert('💾 保存完了！\n「サイトを確認する」を押してHPを確認してください。'), 300);
   } catch(e) {
     if (e.name === 'QuotaExceededError') {
@@ -1281,6 +1233,9 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     }
   }
 });
+
+/* ── すべての const/var 宣言が完了してから自動ログイン判定 ── */
+if (checkLogin()) showAdmin();
 </script>
 </body>
 </html>
