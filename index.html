@@ -452,14 +452,28 @@ function applyGASData(data) {
   if (!data || typeof data !== 'object' || Object.keys(data).length === 0) return false;
   let local = {};
   try { local = JSON.parse(localStorage.getItem('asuphoto_data')) || {}; } catch(e) { local = {}; }
-  const localImages = local.images || {};
+
+  /* テキスト・設定データはGASを優先して上書き */
   Object.assign(local, data);
-  if (Object.keys(localImages).length > 0) {
-    local.images = Object.assign({}, data.images || {}, localImages);
-  }
+
+  /* 画像マージ：GASのDrive URL(https://)優先、ローカルBase64で補完 */
+  const gasImgs   = (data.images  && typeof data.images  === 'object') ? data.images  : {};
+  const localImgs = (local.images && typeof local.images === 'object') ? local.images : {};
+  const merged    = Object.assign({}, localImgs); // まずローカルを全コピー
+  Object.keys(gasImgs).forEach(function(k) {
+    const gv = gasImgs[k];
+    /* GASにDrive URL（https://）があれば必ず上書き */
+    if (gv && typeof gv === 'string' && gv.startsWith('https://')) {
+      merged[k] = gv;
+    }
+    /* GASにデータがなくローカルにもない場合は何もしない */
+  });
+  local.images = merged;
+
   if (data.fadeSettings)  localStorage.setItem('fadeSettings',  JSON.stringify(data.fadeSettings));
   if (data.imageSettings) localStorage.setItem('imageSettings', JSON.stringify(data.imageSettings));
   localStorage.setItem('asuphoto_data', JSON.stringify(local));
+  console.log('[GAS] 適用完了 - キー:', Object.keys(data).join(', '));
   return true;
 }
 

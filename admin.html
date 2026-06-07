@@ -408,9 +408,9 @@
 const PASS = 'asuphoto2025';
 
 /* ── 保存ラッパー ── */
+/* saveData はlocalStorageのみ。GAS送信は各保存ボタンで行う */
 function saveData(d) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-  saveAllToGAS();
 }
 function saveFadeData(settings) {
   localStorage.setItem('fadeSettings', JSON.stringify(settings));
@@ -441,14 +441,38 @@ async function saveAllToGAS() {
   const raw = localStorage.getItem(STORAGE_KEY);
   const allData = raw ? JSON.parse(raw) : {};
 
-  /* 画像データもそのまま含める（GASがDriveに保存してURLに変換する） */
-  const gasData = JSON.parse(JSON.stringify(allData));
+  /* ── Base64画像を除外（GASセル上限50,000文字対策） ── */
+  const gasData = {};
+  Object.keys(allData).forEach(function(key) {
+    const val = allData[key];
+    if (key === 'images' && typeof val === 'object' && val !== null) {
+      /* images: Base64(data:image...)は除外、Drive URL(https://)は残す */
+      const filteredImgs = {};
+      Object.keys(val).forEach(function(k) {
+        if (typeof val[k] !== 'string' || !val[k].startsWith('data:')) {
+          filteredImgs[k] = val[k];
+        }
+      });
+      gasData.images = filteredImgs;
+    } else if (typeof val === 'string' && val.startsWith('data:')) {
+      /* トップレベルのBase64も除外 */
+    } else {
+      gasData[key] = val;
+    }
+  });
 
   /* fadeSettings・imageSettings も追加 */
   const fade = localStorage.getItem('fadeSettings');
   if (fade) { try { gasData.fadeSettings = JSON.parse(fade); } catch(e) {} }
   const imgSet = localStorage.getItem('imageSettings');
   if (imgSet) { try { gasData.imageSettings = JSON.parse(imgSet); } catch(e) {} }
+
+  /* サイズ確認（デバッグ用） */
+  const json = JSON.stringify(gasData);
+  console.log('[GAS] 送信データサイズ:', json.length, '文字');
+  if (json.length > 49000) {
+    console.warn('[GAS] ⚠ データが大きすぎます（' + json.length + '文字）。セル上限に近いです');
+  }
 
   await saveToGAS(gasData);
 }
